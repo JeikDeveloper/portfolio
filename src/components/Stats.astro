@@ -6,7 +6,7 @@
  */
 import { getLangFromUrl, useTranslations, getResume, path } from '../i18n/utils';
 import { skillCount } from '../data/skills';
-import { getProjects, getPosts } from '../lib/content';
+import { getProjects, getPosts, isTranslation } from '../lib/content';
 import { getGitHub } from '../lib/github';
 import { site } from '../data/site';
 
@@ -17,7 +17,9 @@ const r = getResume(lang);
 const starts = r.work.map((w) => parseInt(w.startDate, 10)).filter(Number.isFinite);
 const years = starts.length ? new Date().getFullYear() - Math.min(...starts) : 0;
 const projects = site.showProjects ? (await getProjects()).filter((p) => !p.data.example).length : 0;
-const posts = (await getPosts()).filter((p) => !p.data.example && !p.data.draft).length;
+const published = (await getPosts()).filter((p) => !p.data.example && !p.data.draft);
+// Un artículo escrito en los dos idiomas cuenta una sola vez.
+const posts = published.filter((p, i) => !published.slice(0, i).some((o) => isTranslation(o, p))).length;
 const gh = await getGitHub();
 
 const items = [
