@@ -1,0 +1,25 @@
+---
+/** Bloque de sección con encabezado estándar. Todas las secciones del sitio pasan por aquí. */
+interface Props {
+  id?: string;
+  title: string;
+  note?: string;
+  /** Nivel del título: h2 en páginas con h1 propio (la mayoría). */
+  as?: 'h1' | 'h2';
+  class?: string;
+}
+
+const { id, title, note, as: Heading = 'h2', class: className } = Astro.props;
+const headingId = id ? `${id}-title` : undefined;
+---
+
+<section class:list={['section', className]} id={id} aria-labelledby={headingId}>
+  <div class="container">
+    <header class="section__head">
+      <Heading class="section__title" id={headingId}>{title}</Heading>
+      {note && <p class="section__note">{note}</p>}
+      <slot name="head" />
+    </header>
+    <slot />
+  </div>
+</section>

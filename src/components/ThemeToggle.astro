@@ -1,0 +1,52 @@
+---
+/**
+ * Alterna claro/oscuro. El tema inicial lo fija un script en línea en Base.astro
+ * (antes del primer pintado, para que no haya parpadeo); este solo lo cambia y lo guarda.
+ */
+import Icon from './ui/Icon.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const t = useTranslations(getLangFromUrl(Astro.url));
+---
+
+<button class="icon-btn theme-toggle" type="button" data-theme-toggle aria-label={t('theme.toggle')}>
+  <Icon name="moon" class="theme-toggle__moon" />
+  <Icon name="sun" class="theme-toggle__sun" />
+</button>
+
+<script>
+  const root = document.documentElement;
+  const media = window.matchMedia('(prefers-color-scheme: dark)');
+  const current = () => root.dataset.theme ?? (media.matches ? 'dark' : 'light');
+
+  document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const next = current() === 'dark' ? 'light' : 'dark';
+      root.dataset.theme = next;
+      try {
+        localStorage.setItem('theme', next);
+      } catch {}
+    });
+  });
+</script>
+
+<style>
+  /* En claro se ofrece la luna (pasar a oscuro); en oscuro, el sol. */
+  .theme-toggle :global(.theme-toggle__sun) {
+    display: none;
+  }
+  :global(:root[data-theme='dark']) .theme-toggle :global(.theme-toggle__sun) {
+    display: block;
+  }
+  :global(:root[data-theme='dark']) .theme-toggle :global(.theme-toggle__moon) {
+    display: none;
+  }
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme='light'])) .theme-toggle :global(.theme-toggle__sun) {
+      display: block;
+    }
+    :global(:root:not([data-theme='light'])) .theme-toggle :global(.theme-toggle__moon) {
+      display: none;
+    }
+  }
+</style>

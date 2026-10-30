@@ -1,0 +1,95 @@
+---
+/**
+ * Bloque "Disponible para trabajar" del inicio: estado, qué busco, modalidad
+ * y formas de contacto. El estado se cambia en src/data/about.ts.
+ */
+import StatusBadge from './StatusBadge.astro';
+import ContactButtons from './ContactButtons.astro';
+import Icon from './ui/Icon.astro';
+import Todo from './ui/Todo.astro';
+import { about, availability } from '../data/about';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+import { isTodo, visible } from '../lib/content';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const a = about[lang];
+const looking = [...a.lookingFor, ...a.conditions].filter((i) => visible(i));
+---
+
+<section class="section avail" id="disponibilidad" aria-labelledby="avail-title">
+  <div class="container">
+    <div class="avail__box" data-reveal>
+      <div class="avail__main">
+        <StatusBadge />
+        <h2 class="avail__title" id="avail-title">{t('avail.title')}</h2>
+        <p class="avail__lead">{t(`avail.${availability}`)}</p>
+        <div class="stack">
+          <ContactButtons />
+          <a class="btn btn--ghost" href={`/cv/jeiber-jimenez-${lang}.pdf`} download>
+            <Icon name="download" size={16} />
+            {t('hero.cta.cv')}
+          </a>
+        </div>
+      </div>
+
+      {
+        looking.length > 0 && (
+          <div class="avail__side">
+            <h3 class="avail__h3">{t('avail.looking')}</h3>
+            <ul class="list-dash">
+              {looking.map((item) => (
+                <li>{isTodo(item) ? <Todo text={item} /> : item}</li>
+              ))}
+            </ul>
+            <p class="avail__response muted">{t('avail.response')}</p>
+          </div>
+        )
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .avail__box {
+    display: grid;
+    gap: var(--space-xl);
+    padding: clamp(1.5rem, 5vw, 3rem);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-l);
+    background: var(--bg-subtle);
+  }
+  .avail__main {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-m);
+  }
+  .avail__title {
+    font-size: var(--step-3);
+    letter-spacing: -0.03em;
+  }
+  .avail__lead {
+    margin: 0;
+    font-size: var(--step-1);
+    color: var(--text-muted);
+    max-width: 42ch;
+  }
+  .avail__h3 {
+    font-size: var(--step-0);
+    margin-bottom: var(--space-s);
+  }
+  .avail__response {
+    margin: var(--space-m) 0 0;
+    font-size: var(--step--1);
+  }
+  @media (min-width: 60rem) {
+    .avail__box {
+      grid-template-columns: 1.4fr 1fr;
+      align-items: start;
+    }
+    .avail__side {
+      padding-left: var(--space-xl);
+      border-left: 1px solid var(--border);
+    }
+  }
+</style>

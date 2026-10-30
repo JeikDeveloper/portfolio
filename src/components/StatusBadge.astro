@@ -1,0 +1,26 @@
+---
+/** Insignia de disponibilidad. El estado se cambia en src/data/about.ts. */
+import { availability } from '../data/about';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+interface Props {
+  class?: string;
+}
+const t = useTranslations(getLangFromUrl(Astro.url));
+---
+
+<p class:list={['badge', 'status', `status--${availability}`, Astro.props.class]}>
+  <span class:list={['dot', { 'dot--live': availability === 'open' }]}></span>{t(`status.${availability}`)}
+</p>
+
+<style>
+  .status {
+    margin: 0;
+  }
+  .status--limited .dot {
+    background: var(--warn);
+  }
+  .status--closed .dot {
+    background: var(--text-subtle);
+  }
+</style>

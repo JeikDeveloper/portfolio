@@ -1,0 +1,102 @@
+{
+  "name": "NEXOR ONE",
+  "year": "2026",
+  "kind": "emprendimiento",
+  "featured": true,
+  "order": 1,
+  "example": false,
+  "stack": [
+    "Next.js",
+    "React",
+    "TypeScript",
+    "Fastify",
+    "PostgreSQL",
+    "Redis",
+    "BullMQ",
+    "Claude API",
+    "Tailwind CSS",
+    "Playwright",
+    "Turborepo"
+  ],
+  "image": "../../assets/projects/nexor-one.png",
+  "imageAlt": "Página de inicio de nexor-one.com: «Construimos la tecnología que tu empresa necesita»",
+  "live": "https://www.nexor-one.com",
+  "repo": "",
+  "demo": "viewport",
+  "es": {
+    "title": "NEXOR ONE",
+    "tagline": "Plataforma SaaS de gestión empresarial con agentes de IA que atienden por WhatsApp y Gmail.",
+    "client": "NEXOR — consultora de tecnología, Colombia",
+    "role": "[COMPLETAR: tu cargo exacto y el tamaño del equipo]",
+    "problem": "Las empresas con varias sucursales necesitan centralizar ventas, compras, inventario y agendamiento en un solo sistema, y atender los mensajes que llegan por WhatsApp y correo sin que una persona tenga que responder cada uno.",
+    "built": [
+      "Backend multi-tenant en Fastify y PostgreSQL con Row-Level Security: todas las empresas comparten base de datos sin ver los datos de las demás.",
+      "Motor de agentes sobre la API de Claude con tool use: cinco agentes —ventas, compras, inventario, agenda y finanzas— que interpretan un mensaje y ejecutan acciones reales en la base de datos.",
+      "Bandeja unificada de WhatsApp y Gmail con un único webhook para todos los clientes; el trabajo pesado corre en segundo plano con BullMQ y Redis.",
+      "Aplicación web en Next.js 14 (App Router) con Tailwind CSS y Zustand, desplegada en Vercel; la API corre en Railway.",
+      "Extracción de documentos con OCR y carga masiva de datos desde Excel.",
+      "Pruebas end-to-end con Playwright y pruebas de carga con k6."
+    ],
+    "results": [
+      "Cinco módulos en la versión 1 (ARI, NIRA, KIRA, AGENDA y VERA) conectados entre sí: una orden de compra recibida actualiza el stock y un negocio ganado registra el ingreso en finanzas.",
+      "[COMPLETAR: clientes, usuarios o métricas reales de uso]"
+    ],
+    "decisions": [
+      {
+        "label": "Base de datos compartida con Row-Level Security",
+        "body": "Se descartaron una base de datos o un esquema por cliente: cuestan más de operar y complican las migraciones. RLS aísla bien a un costo bajo, a cambio de disciplina: el tenant siempre sale del token JWT, nunca del cuerpo de la petición."
+      },
+      {
+        "label": "Claude API para los agentes",
+        "body": "Tool use nativo, 200k tokens de contexto para pasar el historial completo de un cliente y buen español, sin necesidad de fine-tuning en la primera versión."
+      },
+      {
+        "label": "Registro inmutable de cada acción del agente",
+        "body": "Toda acción que modifica datos queda en agent_logs, que solo admite inserciones: qué herramienta usó, con qué parámetros y qué resultado obtuvo. Es lo que permite auditar a un agente que actúa sin supervisión."
+      },
+      {
+        "label": "El webhook responde al instante",
+        "body": "El endpoint de WhatsApp devuelve 200 de inmediato y la lógica corre en un worker, para que el proveedor no reintente ni marque el endpoint como caído cuando un agente tarda en responder."
+      }
+    ],
+    "demoNote": "El sitio real, cargado aquí mismo. Cambia el tamaño para ver cómo se adapta a móvil, tableta y escritorio."
+  },
+  "en": {
+    "title": "NEXOR ONE",
+    "tagline": "SaaS business management platform with AI agents that handle WhatsApp and Gmail.",
+    "client": "NEXOR — technology consultancy, Colombia",
+    "role": "[COMPLETAR: your exact title and team size]",
+    "problem": "Companies with several branches need sales, purchasing, inventory and scheduling in a single system, and need to handle the messages arriving over WhatsApp and email without a person answering each one.",
+    "built": [
+      "Multi-tenant backend on Fastify and PostgreSQL with Row-Level Security: every company shares one database without seeing anyone else's data.",
+      "Agent engine on the Claude API with tool use: five agents —sales, purchasing, inventory, scheduling and finance— that read a message and take real actions in the database.",
+      "Unified WhatsApp and Gmail inbox behind a single webhook for every client; heavy work runs in the background with BullMQ and Redis.",
+      "Next.js 14 (App Router) web app with Tailwind CSS and Zustand, deployed on Vercel; the API runs on Railway.",
+      "Document extraction with OCR and bulk data import from Excel.",
+      "End-to-end tests with Playwright and load tests with k6."
+    ],
+    "results": [
+      "Five modules in version 1 (ARI, NIRA, KIRA, AGENDA and VERA) wired together: a received purchase order updates stock and a won deal records the income in finance.",
+      "[COMPLETAR: real clients, users or usage metrics]"
+    ],
+    "decisions": [
+      {
+        "label": "Shared database with Row-Level Security",
+        "body": "A database or schema per client was ruled out: both cost more to run and complicate migrations. RLS isolates well at low cost, in exchange for discipline: the tenant always comes from the JWT, never from the request body."
+      },
+      {
+        "label": "Claude API for the agents",
+        "body": "Native tool use, a 200k-token context to pass a client's full history, and strong Spanish, with no fine-tuning needed for the first version."
+      },
+      {
+        "label": "Immutable log of every agent action",
+        "body": "Every action that changes data is written to agent_logs, which only accepts inserts: which tool was used, with which parameters and what came back. That is what makes an unsupervised agent auditable."
+      },
+      {
+        "label": "The webhook answers immediately",
+        "body": "The WhatsApp endpoint returns 200 right away and the logic runs in a worker, so the provider neither retries nor flags the endpoint as down when an agent takes a while."
+      }
+    ],
+    "demoNote": "The live site, loaded right here. Switch the size to see how it adapts to phone, tablet and desktop."
+  }
+}

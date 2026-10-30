@@ -1,0 +1,158 @@
+---
+import { Image } from 'astro:assets';
+import Icon from './ui/Icon.astro';
+import { getLangFromUrl, useTranslations, path } from '../i18n/utils';
+import type { Project } from '../lib/content';
+
+interface Props {
+  project: Project;
+  /** La primera tarjeta visible carga su imagen sin esperar (mejora el LCP). */
+  eager?: boolean;
+  /** Tarjeta a todo el ancho, con la imagen al lado del texto (cuando hay un solo proyecto). */
+  wide?: boolean;
+}
+
+const { project, eager = false, wide = false } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const { data } = project;
+const copy = data[lang];
+const runnable = data.demo !== 'none' || Boolean(data.live);
+---
+
+<article class:list={['project', { 'project--wide': wide }]} data-reveal data-stack={JSON.stringify(data.stack)}>
+  {
+    data.image && (
+      <div class="project__media">
+        <Image
+          src={data.image}
+          alt={data.imageAlt ?? `${t('projects.imageOf')} ${copy.title}`}
+          widths={[480, 720, 960]}
+          sizes={wide ? '(min-width: 64rem) 40rem, (min-width: 48rem) 55vw, 100vw' : '(min-width: 64rem) 34rem, (min-width: 48rem) 45vw, 100vw'}
+          loading={eager ? 'eager' : 'lazy'}
+          fetchpriority={eager ? 'high' : 'auto'}
+        />
+      </div>
+    )
+  }
+  <div class="project__body">
+    <p class="project__meta">
+      <span>{data.year} · {t(`projects.kind.${data.kind}`)}</span>
+      {data.example && <span class="badge">{t('projects.example')}</span>}
+      {
+        !data.example && runnable && (
+          <span class="badge">
+            <span class="dot" />
+            {t('projects.hasDemo')}
+          </span>
+        )
+      }
+    </p>
+    <h3 class="project__title">
+      <a href={path(lang, 'proyectos', project.id)}>{copy.title}</a>
+    </h3>
+    <p class="project__tagline">{copy.tagline}</p>
+    <ul class="chips" aria-label={t('projects.stack')}>
+      {data.stack.slice(0, 6).map((s) => <li class="chip">{s}</li>)}
+    </ul>
+    <span class="project__cta" aria-hidden="true">{t('projects.open')} <Icon name="arrow-right" size={16} /></span>
+  </div>
+</article>
+
+<style>
+  .project {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-l);
+    overflow: hidden;
+    background: var(--bg);
+    transition: border-color var(--duration) var(--ease), box-shadow var(--duration) var(--ease);
+  }
+  .project:hover {
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow);
+  }
+  .project__media {
+    aspect-ratio: 16 / 10;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .project__media :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+    transition: transform 0.5s var(--ease);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .project:hover .project__media :global(img) {
+      transform: scale(1.02);
+    }
+  }
+  @media (min-width: 48rem) {
+    .project--wide {
+      grid-template-columns: 1.25fr 1fr;
+      grid-template-rows: auto;
+    }
+    .project--wide .project__media {
+      aspect-ratio: auto;
+      min-height: 100%;
+      border-bottom: 0;
+      border-right: 1px solid var(--border);
+    }
+    .project--wide .project__body {
+      align-content: center;
+      padding: var(--space-xl);
+    }
+  }
+  .project__body {
+    display: grid;
+    align-content: start;
+    gap: var(--space-s);
+    padding: var(--space-l);
+  }
+  .project__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-xs);
+    margin: 0;
+    font-size: var(--step--1);
+    color: var(--text-subtle);
+  }
+  .project__meta .badge {
+    padding-block: 0.1rem;
+  }
+  .project__title {
+    font-size: var(--step-2);
+  }
+  .project__title a {
+    color: var(--text);
+    text-decoration: none;
+  }
+  /* Toda la tarjeta es clicable; el enlace accesible es el título. */
+  .project__title a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+  .project__tagline {
+    margin: 0;
+    color: var(--text-muted);
+  }
+  .project__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    margin-top: var(--space-2xs);
+    font-size: var(--step--1);
+    font-weight: 600;
+  }
+  .project[hidden] {
+    display: none;
+  }
+</style>

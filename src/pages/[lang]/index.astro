@@ -1,0 +1,201 @@
+---
+import Base from '../../layouts/Base.astro';
+import Section from '../../components/ui/Section.astro';
+import Icon from '../../components/ui/Icon.astro';
+import SocialLinks from '../../components/SocialLinks.astro';
+import SkillGroups from '../../components/SkillGroups.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import PostCard from '../../components/PostCard.astro';
+import StatusBadge from '../../components/StatusBadge.astro';
+import Stats from '../../components/Stats.astro';
+import Availability from '../../components/Availability.astro';
+import { langStaticPaths, useTranslations, getResume, path, type Lang } from '../../i18n/utils';
+import { getProjects, getPosts } from '../../lib/content';
+import { site } from '../../data/site';
+
+export function getStaticPaths() {
+  return langStaticPaths();
+}
+
+const lang = Astro.params.lang as Lang;
+const t = useTranslations(lang);
+const r = getResume(lang);
+const featured = site.showProjects ? (await getProjects()).filter((p) => p.data.featured).slice(0, 4) : [];
+const posts = (await getPosts(lang)).slice(0, 3);
+---
+
+<Base title={`${r.basics.name} — ${r.basics.label}`} description={r.basics.summary} type="profile" cta={false}>
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="container hero__inner">
+      <StatusBadge />
+      <p class="hero__hello">{t('hero.hello')}</p>
+      <h1 class="hero__title" id="hero-title">{t('hero.title')}</h1>
+      <p class="hero__role">
+        <span>{r.basics.label}</span>
+        <span class="hero__loc"><Icon name="pin" size={16} />{t('hero.location')}</span>
+      </p>
+
+      <div class="stack hero__cta">
+        {
+          site.showProjects && (
+            <a class="btn btn--primary" href={path(lang, 'proyectos')}>
+              {t('hero.cta.projects')} <Icon name="arrow-right" size={16} />
+            </a>
+          )
+        }
+        <a
+          class:list={['btn', site.showProjects ? 'btn--secondary' : 'btn--primary']}
+          href={`/cv/jeiber-jimenez-${lang}.pdf`}
+          download
+        >
+          <Icon name="download" size={16} />
+          {t('hero.cta.cv')}
+        </a>
+        <a class:list={['btn', site.showProjects ? 'btn--ghost' : 'btn--secondary']} href={path(lang, 'contacto')}>
+          <Icon name="mail" size={16} />
+          {t('hero.cta.contact')}
+        </a>
+      </div>
+
+      <SocialLinks />
+    </div>
+  </section>
+
+  <Stats />
+
+  {
+    featured.length > 0 && (
+      <Section id="proyectos" title={t('section.projects')} note={t('section.projects.note')}>
+        <div class:list={['grid', { 'grid--2': featured.length > 1 }]}>
+          {featured.map((project, i) => (
+            <ProjectCard project={project} eager={i === 0} wide={featured.length === 1} />
+          ))}
+        </div>
+        <p class="more">
+          <a class="btn btn--secondary btn--sm" href={path(lang, 'proyectos')}>
+            {t('projects.viewAll')} <Icon name="arrow-right" size={16} />
+          </a>
+        </p>
+      </Section>
+    )
+  }
+
+  <Section id="habilidades" title={t('section.skills')} note={t('section.skills.note')}>
+    <SkillGroups />
+  </Section>
+
+  <Section id="experiencia" title={t('section.experience')} note={t('section.experience.note')}>
+    <ol class="jobs">
+      {
+        r.work.map((job) => (
+          <li class="jobs__item" data-reveal>
+            <span class="jobs__dates mono">
+              {job.startDate} — {job.endDate}
+            </span>
+            <span class="jobs__role">{job.position}</span>
+            <span class="jobs__org">{job.name}</span>
+          </li>
+        ))
+      }
+    </ol>
+    <p class="more">
+      <a class="btn btn--secondary btn--sm" href={path(lang, 'sobre-mi')}>
+        {t('nav.about')} <Icon name="arrow-right" size={16} />
+      </a>
+    </p>
+  </Section>
+
+  {
+    posts.length > 0 && (
+      <Section id="blog" title={t('blog.latest')}>
+        <div class="posts">
+          {posts.map((post) => (
+            <PostCard post={post} />
+          ))}
+        </div>
+        <p class="more">
+          <a class="btn btn--secondary btn--sm" href={path(lang, 'blog')}>
+            {t('blog.viewAll')} <Icon name="arrow-right" size={16} />
+          </a>
+        </p>
+      </Section>
+    )
+  }
+
+  <Availability />
+</Base>
+
+<style>
+  .hero {
+    padding-block: clamp(4rem, 12vw, 8rem) clamp(3rem, 8vw, 6rem);
+  }
+  .hero__inner {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-l);
+  }
+  .hero__hello {
+    margin: 0 0 calc(var(--space-s) * -1);
+    font-size: var(--step-1);
+    font-weight: 550;
+    color: var(--text-muted);
+  }
+  .hero__title {
+    font-size: var(--step-4);
+    letter-spacing: -0.035em;
+    line-height: 1.08;
+    max-width: 20ch;
+  }
+  .hero__role {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs) var(--space-l);
+    margin: 0;
+    font-size: var(--step-1);
+    color: var(--text-muted);
+  }
+  .hero__loc {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+  }
+  .hero__cta {
+    margin-top: var(--space-xs);
+  }
+  .jobs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .jobs__item {
+    display: grid;
+    gap: var(--space-2xs) var(--space-xl);
+    padding-block: var(--space-m);
+    border-top: 1px solid var(--border);
+  }
+  .jobs__item:last-child {
+    border-bottom: 1px solid var(--border);
+  }
+  .jobs__dates {
+    color: var(--text-subtle);
+  }
+  .jobs__role {
+    font-weight: 600;
+  }
+  .jobs__org {
+    color: var(--text-muted);
+  }
+  @media (min-width: 48rem) {
+    .jobs__item {
+      grid-template-columns: 10rem 1fr auto;
+      align-items: baseline;
+    }
+  }
+  .posts > :global(:first-child) {
+    border-top: 0;
+    padding-top: 0;
+  }
+  .more {
+    margin: var(--space-2xl) 0 0;
+  }
+</style>

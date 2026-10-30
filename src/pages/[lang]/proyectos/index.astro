@@ -1,0 +1,131 @@
+---
+import Base from '../../../layouts/Base.astro';
+import ProjectCard from '../../../components/ProjectCard.astro';
+import GitHubRepos from '../../../components/GitHubRepos.astro';
+import { site } from '../../../data/site';
+import { langStaticPaths, useTranslations, getResume, type Lang } from '../../../i18n/utils';
+import { getProjects } from '../../../lib/content';
+
+export function getStaticPaths() {
+  // Con la sección oculta (src/data/site.ts) no se genera la página.
+  return site.showProjects ? langStaticPaths() : [];
+}
+
+const lang = Astro.params.lang as Lang;
+const t = useTranslations(lang);
+const r = getResume(lang);
+const projects = await getProjects();
+
+// Tecnologías para el filtro, de la más usada a la menos usada.
+const counts = new Map<string, number>();
+projects.forEach((p) => p.data.stack.forEach((s) => counts.set(s, (counts.get(s) ?? 0) + 1)));
+const techs = [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([name]) => name);
+---
+
+<Base title={`${t('section.projects')} — ${r.basics.name}`} description={t('section.projects.note')}>
+  <header class="page-head">
+    <div class="container">
+      <h1 class="page-head__title">{t('section.projects')}</h1>
+      <p class="page-head__note">{t('section.projects.note')}</p>
+    </div>
+  </header>
+
+  <section class="container projects" aria-labelledby="projects-list">
+    <h2 class="visually-hidden" id="projects-list">{t('section.projects')}</h2>
+    {
+      // El filtro solo tiene sentido con más de un proyecto.
+      projects.length > 1 && techs.length > 1 && (
+        <div class="filter" role="group" aria-label={t('projects.filter')} data-filter>
+          <button class="filter__opt" type="button" aria-pressed="true" data-tech="">
+            {t('projects.all')}
+          </button>
+          {techs.map((tech) => (
+            <button class="filter__opt" type="button" aria-pressed="false" data-tech={tech}>
+              {tech}
+            </button>
+          ))}
+        </div>
+      )
+    }
+
+    <div class:list={['grid', { 'grid--2': projects.length > 1 }]} data-filter-list>
+      {projects.map((project, i) => <ProjectCard project={project} eager={i === 0} wide={projects.length === 1} />)}
+    </div>
+    <p class="projects__empty muted" data-filter-empty hidden>{t('projects.empty')}</p>
+    <p class="visually-hidden" aria-live="polite" data-filter-count></p>
+  </section>
+
+  <GitHubRepos />
+</Base>
+
+<script>
+  const group = document.querySelector<HTMLElement>('[data-filter]');
+  const cards = [...document.querySelectorAll<HTMLElement>('[data-filter-list] [data-stack]')];
+  const empty = document.querySelector<HTMLElement>('[data-filter-empty]');
+  const count = document.querySelector<HTMLElement>('[data-filter-count]');
+
+  function apply(tech: string) {
+    let shown = 0;
+    cards.forEach((card) => {
+      const match = !tech || (JSON.parse(card.dataset.stack ?? '[]') as string[]).includes(tech);
+      card.hidden = !match;
+      if (match) {
+        shown++;
+        card.classList.add('is-visible');
+      }
+    });
+    if (empty) empty.hidden = shown > 0;
+    if (count) count.textContent = String(shown);
+    group?.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.tech === tech)));
+  }
+
+  group?.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest('button');
+    if (!btn) return;
+    const tech = btn.dataset.tech ?? '';
+    apply(tech);
+    const url = new URL(location.href);
+    tech ? url.searchParams.set('tech', tech) : url.searchParams.delete('tech');
+    history.replaceState(null, '', url);
+  });
+
+  // Permite compartir un enlace ya filtrado: /es/proyectos/?tech=React
+  const initial = new URLSearchParams(location.search).get('tech');
+  if (initial) apply(initial);
+</script>
+
+<style>
+  .projects {
+    padding-bottom: var(--space-section);
+  }
+  .filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-2xl);
+  }
+  .filter__opt {
+    padding: 0.4rem 0.85rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-full);
+    background: var(--bg);
+    color: var(--text-muted);
+    font: inherit;
+    font-size: var(--step--1);
+    cursor: pointer;
+    transition: background var(--duration) var(--ease), color var(--duration) var(--ease),
+      border-color var(--duration) var(--ease);
+  }
+  .filter__opt:hover {
+    color: var(--text);
+    border-color: var(--border-strong);
+  }
+  .filter__opt[aria-pressed='true'] {
+    background: var(--text);
+    border-color: var(--text);
+    color: var(--bg);
+  }
+  .projects__empty {
+    margin-top: var(--space-l);
+  }
+</style>

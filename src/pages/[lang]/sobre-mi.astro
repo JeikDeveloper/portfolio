@@ -1,0 +1,150 @@
+---
+import Base from '../../layouts/Base.astro';
+import Section from '../../components/ui/Section.astro';
+import Icon from '../../components/ui/Icon.astro';
+import Todo from '../../components/ui/Todo.astro';
+import TimelineEntry from '../../components/TimelineEntry.astro';
+import StatusBadge from '../../components/StatusBadge.astro';
+import { langStaticPaths, useTranslations, getResume, path, type Lang } from '../../i18n/utils';
+import { about } from '../../data/about';
+import { isTodo, visible } from '../../lib/content';
+
+export function getStaticPaths() {
+  return langStaticPaths();
+}
+
+const lang = Astro.params.lang as Lang;
+const t = useTranslations(lang);
+const r = getResume(lang);
+const a = about[lang];
+const looking = [...a.lookingFor, ...a.conditions].filter((i) => visible(i));
+---
+
+<Base title={`${t('about.title')} — ${r.basics.name}`} description={a.story[0]} type="profile">
+  <header class="page-head">
+    <div class="container">
+      <h1 class="page-head__title">{t('about.title')}</h1>
+      <p class="page-head__note">{t('about.note')}</p>
+    </div>
+  </header>
+
+  <section class="container about" aria-labelledby="story-title">
+    <div class="about__story">
+      <h2 class="about__h2" id="story-title">{t('about.story')}</h2>
+      {a.story.map((p) => <p>{p}</p>)}
+    </div>
+
+    <aside class="card about__looking" aria-labelledby="looking-title">
+      <StatusBadge />
+      <h2 class="about__h2" id="looking-title">{t('about.lookingFor')}</h2>
+      <ul class="list-dash">
+        {looking.map((item) => <li>{isTodo(item) ? <Todo text={item} /> : item}</li>)}
+      </ul>
+      <div class="stack">
+        <a class="btn btn--primary btn--sm" href={path(lang, 'contacto')}>
+          <Icon name="mail" size={16} />
+          {t('hero.cta.contact')}
+        </a>
+        <a class="btn btn--secondary btn--sm" href={`/cv/jeiber-jimenez-${lang}.pdf`} download>
+          <Icon name="download" size={16} />
+          {t('hero.cta.cv')}
+        </a>
+      </div>
+    </aside>
+  </section>
+
+  <Section id="trayectoria" title={t('about.timeline')}>
+    <ol class="timeline">
+      {
+        r.work.map((job) => (
+          <TimelineEntry
+            name={job.name}
+            position={job.position}
+            startDate={job.startDate}
+            endDate={job.endDate}
+            summary={job.summary}
+            highlights={job.highlights.slice(0, 4)}
+          />
+        ))
+      }
+      {
+        r.education.map((e) => (
+          <TimelineEntry
+            name={`${e.institution} · ${e.location}`}
+            position={`${e.studyType} — ${e.area}`}
+            endDate={e.endDate}
+          />
+        ))
+      }
+    </ol>
+  </Section>
+
+  <Section id="idiomas" title={t('about.languages')}>
+    <ul class="langs">
+      {
+        r.languages.map((l) => (
+          <li class="card">
+            <strong>{l.language}</strong>
+            <span class="muted">{l.fluency}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
+</Base>
+
+<style>
+  .about {
+    display: grid;
+    gap: var(--space-2xl);
+    padding-bottom: var(--space-section);
+  }
+  @media (min-width: 64rem) {
+    .about {
+      grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+      align-items: start;
+    }
+    .about__looking {
+      position: sticky;
+      top: calc(var(--header-h) + 1.5rem);
+    }
+  }
+  .about__h2 {
+    font-size: var(--step-2);
+    margin-bottom: var(--space-m);
+  }
+  .about__story p {
+    font-size: var(--step-1);
+    line-height: 1.7;
+    color: var(--text-muted);
+  }
+  .about__story p:first-of-type {
+    color: var(--text);
+  }
+  .about__looking {
+    display: grid;
+    gap: var(--space-m);
+    justify-items: start;
+  }
+  .about__looking .about__h2 {
+    margin-bottom: 0;
+  }
+  .timeline {
+    list-style: none;
+    margin: 0 0 var(--space-l);
+    padding: 0;
+  }
+  .langs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-m);
+  }
+  .langs li {
+    display: grid;
+    gap: var(--space-2xs);
+    min-width: 12rem;
+  }
+</style>

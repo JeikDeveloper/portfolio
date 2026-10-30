@@ -1,0 +1,45 @@
+---
+/** Íconos de GitHub, LinkedIn y correo. Los datos salen de resume.json. */
+import Icon, { type IconName } from './ui/Icon.astro';
+import { getLangFromUrl, getResume, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const r = getResume(lang);
+
+const icons: Record<string, IconName> = { GitHub: 'github', LinkedIn: 'linkedin' };
+const links = [
+  ...r.basics.profiles
+    .filter((p) => p.network in icons)
+    .map((p) => ({ href: p.url, label: p.network, icon: icons[p.network], external: true })),
+  { href: `mailto:${r.basics.email}`, label: t('contact.email'), icon: 'mail' as IconName, external: false },
+];
+---
+
+<ul class="social">
+  {
+    links.map((l) => (
+      <li>
+        <a
+          class="icon-btn"
+          href={l.href}
+          aria-label={l.label}
+          title={l.label}
+          {...(l.external ? { target: '_blank', rel: 'me noopener noreferrer' } : {})}
+        >
+          <Icon name={l.icon} size={18} />
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .social {
+    display: flex;
+    gap: var(--space-2xs);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+</style>

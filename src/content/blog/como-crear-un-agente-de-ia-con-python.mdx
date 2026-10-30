@@ -1,0 +1,183 @@
+---
+title: Cómo crear un agente de IA con Python
+description: Qué diferencia a un agente de un chatbot, cómo funciona el ciclo pensar–actuar y un agente completo en Python con la API de Claude, listo para correr.
+pubDate: 2026-10-29
+lang: es
+translation: how-to-build-an-ai-agent-with-python
+category: ia
+tags:
+  - python
+  - agentes
+  - ia
+  - claude
+draft: false
+example: false
+---
+
+Un **chatbot** responde con texto. Un **agente** decide qué hacer: consulta una base de datos, llama una API, revisa el resultado y repite hasta terminar la tarea. La diferencia no está en el modelo, sino en el ciclo que lo rodea.
+
+Construyo agentes a diario: en Tata Consultancy Services, sobre AWS Bedrock con LangChain, y en NEXOR ONE, mi plataforma, con la API de Claude, donde los agentes atienden a los clientes por WhatsApp y correo. En este artículo armamos un agente pequeño pero completo, sin frameworks, para ver exactamente qué pasa en cada paso.
+
+## El ciclo de un agente
+
+Todo agente, por complejo que sea, repite los mismos cuatro pasos:
+
+1. Recibe una petición.
+2. El modelo decide si ya puede responder o si necesita una herramienta.
+3. Si necesita una, **tu código** la ejecuta y le devuelve el resultado.
+4. Se repite hasta que el modelo tiene la respuesta final.
+
+![Diagrama del ciclo de un agente](../../assets/blog/agente-ciclo.svg)
+
+El modelo nunca ejecuta nada por su cuenta: solo pide. Quien ejecuta, valida y decide qué se permite es tu código. Esa separación es la que hace que un agente se pueda llevar a producción.
+
+## Lo que necesitas
+
+- Python 3.10 o superior.
+- El SDK oficial: `pip install anthropic`.
+- Una API key de [Claude](https://platform.claude.com) en la variable de entorno `ANTHROPIC_API_KEY`.
+
+## El agente completo
+
+Es un asistente de inventario con una sola herramienta, `consultar_stock`. Guárdalo como `agente.py` y córrelo con `python agente.py`:
+
+```python
+import json
+
+import anthropic
+
+client = anthropic.Anthropic()  # Lee ANTHROPIC_API_KEY del entorno.
+
+# 1. Las herramientas son funciones normales de Python.
+INVENTARIO = {"teclado": 12, "mouse": 0, "monitor": 3}
+
+
+def consultar_stock(producto: str) -> dict:
+    producto = producto.strip().lower()
+    if producto not in INVENTARIO:
+        raise ValueError(f"No existe el producto '{producto}'.")
+    return {"producto": producto, "unidades": INVENTARIO[producto]}
+
+
+# 2. Al modelo se le describe cada herramienta con un JSON Schema.
+HERRAMIENTAS = [
+    {
+        "name": "consultar_stock",
+        "description": (
+            "Devuelve cuántas unidades hay en bodega de un producto. "
+            "Úsala antes de afirmar si algo está disponible."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "producto": {
+                    "type": "string",
+                    "description": "Nombre del producto, por ejemplo 'teclado'.",
+                }
+            },
+            "required": ["producto"],
+            "additionalProperties": False,
+        },
+        "strict": True,  # Los argumentos siempre cumplen el esquema.
+    }
+]
+FUNCIONES = {"consultar_stock": consultar_stock}
+
+
+# 3. Ejecuta una llamada del modelo y la convierte en un resultado.
+def ejecutar_herramienta(llamada) -> dict:
+    resultado = {"type": "tool_result", "tool_use_id": llamada.id}
+    try:
+        salida = FUNCIONES[llamada.name](**llamada.input)
+        resultado["content"] = json.dumps(salida, ensure_ascii=False)
+    except Exception as error:
+        # El modelo recibe el error y puede corregir el siguiente paso.
+        resultado["content"] = f"Error: {error}"
+        resultado["is_error"] = True
+    print(f"[herramienta] {llamada.name}({llamada.input}) -> {resultado['content']}")
+    return resultado
+
+
+# 4. El ciclo: el modelo pide herramientas hasta que puede responder.
+def ejecutar_agente(pregunta: str, max_turnos: int = 5) -> str:
+    mensajes = [{"role": "user", "content": pregunta}]
+
+    for _ in range(max_turnos):
+        respuesta = client.beta.messages.create(
+            model="claude-opus-5-5",
+            max_tokens=16000,
+            system="Eres el asistente de inventario de una tienda. Responde en español y en pocas líneas.",
+            tools=HERRAMIENTAS,
+            messages=mensajes,
+            # Si el modelo rechaza la petición, la API la reintenta sola con otro modelo.
+            betas=["server-side-fallback-2026-07-01"],
+            fallbacks="default",
+        )
+
+        if respuesta.stop_reason == "refusal":
+            return "No puedo ayudar con esa petición."
+
+        # Se guarda el turno completo del modelo: texto y llamadas a herramientas.
+        mensajes.append({"role": "assistant", "content": respuesta.content})
+
+        if respuesta.stop_reason != "tool_use":
+            return "".join(b.text for b in respuesta.content if b.type == "text")
+
+        # Todas las llamadas del turno se responden juntas, en un solo mensaje.
+        llamadas = [b for b in respuesta.content if b.type == "tool_use"]
+        mensajes.append({"role": "user", "content": [ejecutar_herramienta(b) for b in llamadas]})
+
+    return "No pude completar la tarea en el número de pasos permitido."
+
+
+if __name__ == "__main__":
+    print(ejecutar_agente("¿Me alcanza el inventario para armar 5 combos de teclado y mouse?"))
+```
+
+## Paso a paso
+
+### 1. La herramienta es una función normal
+
+`consultar_stock` no sabe nada de inteligencia artificial: recibe un producto y devuelve las unidades. Si el producto no existe, lanza un error como lo haría cualquier función. En un sistema real, aquí iría la consulta a tu base de datos o a tu API.
+
+### 2. El modelo solo ve una descripción
+
+Para el modelo, la herramienta es su nombre, una **descripción** y un **JSON Schema** de los argumentos. La descripción importa más de lo que parece: es lo que el modelo lee para decidir cuándo usarla. "Úsala antes de afirmar si algo está disponible" evita que invente una respuesta sin consultar.
+
+Con `"strict": True`, la API garantiza que los argumentos que llegan cumplen el esquema: no te va a llegar un número donde esperabas texto.
+
+### 3. Los errores vuelven al modelo
+
+Cuando una herramienta falla, no se corta el programa: el error se le devuelve al modelo con `is_error`. En la práctica, el modelo lo lee y corrige: si pidió "mouses" y no existe, vuelve a intentar con "mouse". Fíjate también en el `print`: es el registro de cada acción, y en producción no es opcional (abajo explico por qué).
+
+### 4. El ciclo y su condición de salida
+
+La clave está en `stop_reason`:
+
+- `tool_use`: el modelo pidió una o varias herramientas. Las ejecutas y le devuelves **todos** los resultados juntos, en un solo mensaje.
+- Cualquier otro valor: el modelo terminó y su texto es la respuesta.
+
+Cada vuelta se guarda en `mensajes` el turno completo del modelo, no solo su texto. La API no tiene memoria entre llamadas: el historial que le envías es todo lo que sabe.
+
+<Callout type="tip">
+  Pon siempre un límite de turnos (`max_turnos`). Sin él, un agente confundido puede quedarse llamando herramientas en bucle y gastar tokens sin parar.
+</Callout>
+
+## Qué pasa cuando lo corres
+
+Con la pregunta "¿Me alcanza el inventario para armar 5 combos de teclado y mouse?", el modelo no responde de memoria: pide `consultar_stock` para el teclado y para el mouse (normalmente las dos en el mismo turno), recibe 12 y 0, y responde que no alcanza porque no hay mouses. En la consola ves una línea `[herramienta]` por cada consulta, antes de la respuesta final.
+
+Ese ir y venir es todo el truco. Lo demás es agregar herramientas.
+
+## Cómo llevarlo a producción
+
+El ejemplo cabe en 90 líneas. Lo que separa un ejemplo de un agente en producción son estas reglas:
+
+- **Registra cada acción en un lugar que no se pueda editar.** En NEXOR ONE, toda acción que modifica datos queda en una tabla que solo admite inserciones: qué herramienta usó el agente, con qué parámetros y qué obtuvo. Sin ese registro no hay forma de auditar a un agente que actúa sin supervisión.
+- **Valida en tu código, no en el prompt.** El esquema estricto asegura el formato, pero que el cliente exista o que el monto sea razonable lo decide tu función antes de ejecutar nada.
+- **Separa leer de escribir.** Empieza con herramientas de solo lectura. Las que crean, modifican o envían algo llegan después, y las más delicadas pasan primero por la aprobación de una persona.
+- **Responde rápido y procesa aparte.** Si el agente atiende por WhatsApp o por un webhook, devuelve la respuesta HTTP de inmediato y deja el ciclo del agente en un proceso en segundo plano: los proveedores reintentan o marcan caído un endpoint que tarda.
+
+## Siguiente paso
+
+Agrega una segunda herramienta, por ejemplo `consultar_precio`, y pregúntale cuánto cuestan los combos que sí se pueden armar. Mira cómo el modelo encadena las dos herramientas por su cuenta: ese es el momento en que un agente empieza a ser útil.

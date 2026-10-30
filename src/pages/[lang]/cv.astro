@@ -1,0 +1,155 @@
+---
+import Base from '../../layouts/Base.astro';
+import Section from '../../components/ui/Section.astro';
+import Icon from '../../components/ui/Icon.astro';
+import SkillCard from '../../components/SkillCard.astro';
+import TimelineEntry from '../../components/TimelineEntry.astro';
+import { langStaticPaths, useTranslations, getResume, type Lang } from '../../i18n/utils';
+
+export function getStaticPaths() {
+  return langStaticPaths();
+}
+
+const lang = Astro.params.lang as Lang;
+const t = useTranslations(lang);
+const r = getResume(lang);
+const facts = [
+  { label: t('contact.email'), value: r.basics.email, href: `mailto:${r.basics.email}` },
+  { label: t('contact.phone'), value: r.basics.phone, href: `tel:${r.basics.phone.replace(/\s/g, '')}` },
+  ...r.basics.profiles.map((p) => ({ label: p.network, value: p.username, href: p.url })),
+];
+---
+
+<Base title={`${t('cv.title')} — ${r.basics.name}`} description={r.basics.summary}>
+  <header class="page-head">
+    <div class="container">
+      <p class="eyebrow">{t('cv.generated')} {r.meta.lastModified}</p>
+      <h1 class="page-head__title">{t('cv.title')}</h1>
+      <p class="lead">{r.basics.summary}</p>
+
+      <div class="stack cv__cta">
+        <a class="btn btn--primary" href={`/cv/jeiber-jimenez-${lang}.pdf`} download>
+          <Icon name="download" size={16} />
+          {t('cv.download')}
+        </a>
+        <a class="btn btn--secondary" href={`/cv/jeiber-jimenez-${lang}-ats.pdf`} download>
+          <Icon name="download" size={16} />
+          {t('cv.downloadAts')}
+        </a>
+      </div>
+
+      <dl class="cv__facts">
+        {
+          facts.map((f) => (
+            <div>
+              <dt>{f.label}</dt>
+              <dd>
+                <a href={f.href} {...(f.href.startsWith('http') ? { target: '_blank', rel: 'me noopener' } : {})}>
+                  {f.value}
+                </a>
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </header>
+
+  <Section id="experiencia" title={t('section.experience')}>
+    <ol class="timeline">
+      {
+        r.work.map((job) => (
+          <TimelineEntry
+            name={job.name}
+            position={job.position}
+            startDate={job.startDate}
+            endDate={job.endDate}
+            summary={job.summary}
+            highlights={job.highlights}
+          />
+        ))
+      }
+    </ol>
+  </Section>
+
+  <Section id="habilidades" title={t('section.skills')}>
+    <div class="grid grid--3">
+      {r.skills.map((s) => <SkillCard name={s.name} level={s.level} summary={s.summary} keywords={s.keywords} />)}
+    </div>
+  </Section>
+
+  <Section id="formacion" title={t('section.education')}>
+    <div class="grid grid--2">
+      {
+        r.education.map((e) => (
+          <article class="card" data-reveal>
+            <p class="eyebrow">
+              {e.studyType} · {e.endDate}
+            </p>
+            <h3 class="cv__card-title">{e.area}</h3>
+            <p class="muted cv__card-sub">
+              {e.institution} · {e.location}
+            </p>
+          </article>
+        ))
+      }
+      <article class="card" data-reveal>
+        <p class="eyebrow">{t('section.languages')}</p>
+        <ul class="cv__langs">
+          {
+            r.languages.map((l) => (
+              <li>
+                <strong>{l.language}</strong> <span class="muted">— {l.fluency}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </article>
+    </div>
+  </Section>
+</Base>
+
+<style>
+  .cv__cta {
+    margin-block: var(--space-xl) var(--space-2xl);
+  }
+  .cv__facts {
+    display: grid;
+    gap: var(--space-m) var(--space-xl);
+    margin: 0;
+    padding-top: var(--space-xl);
+    border-top: 1px solid var(--border);
+  }
+  @media (min-width: 48rem) {
+    .cv__facts {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  .cv__facts dt {
+    font-size: var(--step--1);
+    color: var(--text-subtle);
+  }
+  .cv__facts dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+  .timeline {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .cv__card-title {
+    font-size: var(--step-1);
+    margin: var(--space-xs) 0 var(--space-2xs);
+  }
+  .cv__card-sub {
+    margin: 0;
+  }
+  .cv__langs {
+    list-style: none;
+    margin: var(--space-xs) 0 0;
+    padding: 0;
+    display: grid;
+    gap: 0.4rem;
+  }
+</style>

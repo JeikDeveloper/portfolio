@@ -1,0 +1,217 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jsonresume/resume-schema/v1.0.0/schema.json",
+  "meta": {
+    "version": "2026.10",
+    "lastModified": "2026-10-29",
+    "language": "es"
+  },
+  "basics": {
+    "name": "Jeiber I. Jiménez Bojacá",
+    "label": "Desarrollador Python · Ingeniería de IA, agentes y automatización",
+    "email": "jeiber2001@gmail.com",
+    "phone": "+57 321 960 5408",
+    "url": "https://jeikdeveloper.vercel.app",
+    "summary": "Desarrollador Python con cinco años llevando IA a producción y automatizando los procesos que la rodean. En seguros entrené modelos de visión por computadora que deciden sobre siniestros y documentos reales; hoy, en consultoría, construyo agentes con LLM, automatizaciones sobre AWS y n8n, y sistemas de extracción que operan sin intervención manual, y he sido líder técnico en varios proyectos. Me interesa el problema completo: del negocio al despliegue.",
+    "location": {
+      "city": "Bogotá",
+      "region": "Bogotá D.C.",
+      "countryCode": "CO"
+    },
+    "profiles": [
+      {
+        "network": "GitHub",
+        "username": "JeikDeveloper",
+        "url": "https://github.com/JeikDeveloper"
+      },
+      {
+        "network": "LinkedIn",
+        "username": "Jeiber I. Jiménez Bojacá",
+        "url": "https://www.linkedin.com/in/jeiber-jimenez-python/"
+      }
+    ]
+  },
+  "work": [
+    {
+      "name": "Tata Consultancy Services",
+      "position": "Desarrollador",
+      "startDate": "2023",
+      "endDate": "Actualidad",
+      "summary": "Ingeniería de ciclo completo sobre AWS, del concepto al despliegue: automatización de procesos con servicios serverless, plataformas de datos y soluciones de IA —modelos propios, agentes con LLM y flujos en n8n— metidas dentro de las decisiones del negocio. En varios proyectos asumí el rol de líder técnico.",
+      "highlights": [
+        "Asumí el rol de líder técnico en varios proyectos: guié al equipo en las decisiones técnicas y respondí por la entrega.",
+        "Construí agentes con modelos de lenguaje sobre AWS Bedrock, orquestados con LangChain y LlamaIndex: consultan las fuentes internas y ejecutan pasos con herramientas, en vez de devolver texto suelto.",
+        "Construí flujos de automatización en n8n que conectan agentes y modelos de lenguaje con sistemas internos y APIs externas, sin pasos manuales en el medio.",
+        "Entrené e integré modelos propios de machine learning en SageMaker para automatizar decisiones de negocio que antes tomaba una persona.",
+        "Automaticé procesos de negocio con servicios de AWS: funciones Lambda disparadas por eventos, almacenamiento en S3 y monitoreo con CloudWatch, más API Gateway y RDS donde había que exponer o guardar datos. Lo que se hacía a mano ahora corre solo y queda registrado.",
+        "Orquesté pipelines ETL con Glue y S3, con zonas separadas y validación de esquema como compuerta: el dato que no cumple no llega al tablero.",
+        "Desarrollé en Python sistemas de extracción resistentes a anti-bot —CAPTCHA, rotación de IP y payloads dinámicos— para asegurar fuentes externas de alto valor.",
+        "Automaticé en Python procesos internos que se hacían a mano, y construí herramientas propias en Java y VBA para la operación diaria.",
+        "Diseñé arquitecturas SQL de alta disponibilidad y afiné consultas para analítica predictiva y reportería en tiempo real.",
+        "Entregué tableros ejecutivos en Power BI que traducen métricas técnicas en decisiones."
+      ]
+    },
+    {
+      "name": "LisaInsurtech",
+      "position": "Desarrollador Python para IA",
+      "startDate": "2022",
+      "endDate": "2023",
+      "summary": "En el equipo de Inteligencia Artificial de una insurtech: llevé a producción modelos propios que automatizan decisiones que antes dependían de una persona mirando fotos y documentos.",
+      "highlights": [
+        "Entrené y puse en producción modelos de visión por computadora que analizan las fotos de un siniestro: valoran el daño y detectan cuando no corresponden a lo reportado.",
+        "Sumé verificación automática de documentos —cédulas, pólizas, facturas—: extracción de datos y control de legibilidad y autenticidad antes de que el caso llegue a un analista.",
+        "Conecté esos modelos con la detección de fraude en tiempo real: un reclamo sospechoso se marca en el momento, no días después.",
+        "Automaticé la gestión de siniestros: los casos estándar se resuelven solos y el equipo se concentra en los difíciles.",
+        "Desarrollé chatbots con NLP para atención al cliente y afiné la segmentación de clientes.",
+        "Lideré los pipelines de MLOps —reentrenamiento, versionado y monitoreo— para que los modelos no se degraden en silencio."
+      ]
+    },
+    {
+      "name": "Tic Social",
+      "position": "Desarrollador Backend Python",
+      "startDate": "2021",
+      "endDate": "2022",
+      "summary": "Backend para entidades del sector salud, con contacto directo con el cliente.",
+      "highlights": [
+        "Integré Celery para sacar de la petición HTTP las tareas pesadas que bloqueaban la API.",
+        "Construí y mantuve APIs con Django REST Framework, con pruebas unitarias sobre la lógica crítica.",
+        "Optimicé consultas y estructura de bases de datos SQL donde el volumen empezaba a doler."
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "name": "Backend y arquitectura",
+      "level": "Experto",
+      "summary": "Soluciones escalables y orientadas a objetos.",
+      "keywords": [
+        "Python",
+        "Django",
+        "FastAPI",
+        "Flask",
+        "Java",
+        "Multithreading",
+        "APIs REST"
+      ]
+    },
+    {
+      "name": "Cloud computing",
+      "level": "Avanzado",
+      "summary": "Arquitectura serverless y automatización de procesos sobre AWS.",
+      "keywords": [
+        "AWS",
+        "Lambda",
+        "S3",
+        "CloudWatch",
+        "API Gateway",
+        "Glue",
+        "RDS",
+        "Bedrock",
+        "SageMaker"
+      ]
+    },
+    {
+      "name": "IA, agentes y automatización",
+      "level": "Avanzado",
+      "summary": "Modelos propios, agentes con LLM y automatizaciones en producción: visión, texto y decisión.",
+      "keywords": [
+        "Agentes LLM",
+        "LangChain",
+        "LlamaIndex",
+        "n8n",
+        "Automatización de procesos",
+        "Visión por computadora",
+        "OCR",
+        "NLP",
+        "MLOps",
+        "Detección de fraude"
+      ]
+    },
+    {
+      "name": "Web scraping avanzado",
+      "level": "Experto",
+      "summary": "Extracción compleja, resolución de CAPTCHA y evasión de anti-bot.",
+      "keywords": [
+        "Selenium",
+        "Playwright",
+        "Rotación de IP",
+        "Payloads dinámicos"
+      ]
+    },
+    {
+      "name": "Frontend",
+      "level": "Intermedio",
+      "summary": "Interfaces web y sitios para los productos que construyo.",
+      "keywords": [
+        "React",
+        "Next.js",
+        "TypeScript",
+        "Tailwind CSS",
+        "Astro"
+      ]
+    },
+    {
+      "name": "Gestión de datos",
+      "level": "Avanzado",
+      "summary": "Optimización de bases de datos de alto desempeño.",
+      "keywords": [
+        "SQL",
+        "NoSQL",
+        "Modelado",
+        "Tuning de consultas"
+      ]
+    },
+    {
+      "name": "Business intelligence",
+      "level": "Avanzado",
+      "summary": "Reportería estratégica y automatización de procesos.",
+      "keywords": [
+        "Power BI",
+        "Excel VBA",
+        "DAX"
+      ]
+    },
+    {
+      "name": "DevOps y herramientas",
+      "level": "Intermedio-avanzado",
+      "summary": "Integración y entrega continua, trabajo ágil.",
+      "keywords": [
+        "Git",
+        "CI/CD",
+        "Agile",
+        "Docker"
+      ]
+    },
+    {
+      "name": "Habilidades blandas",
+      "summary": "Cómo trabajo con equipos y clientes.",
+      "keywords": [
+        "Liderazgo técnico",
+        "Comunicación con clientes y negocio",
+        "Traducir necesidades de negocio en soluciones técnicas",
+        "Trabajo en equipo",
+        "Resolución de problemas",
+        "Autonomía y responsabilidad por la entrega",
+        "Aprendizaje continuo"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "institution": "Universidad Manuela Beltrán",
+      "area": "Ingeniería de Software",
+      "studyType": "Pregrado",
+      "endDate": "En curso",
+      "location": "Bogotá, Colombia"
+    }
+  ],
+  "languages": [
+    {
+      "language": "Español",
+      "fluency": "Nativo"
+    },
+    {
+      "language": "Inglés",
+      "fluency": "B1 — Intermedio"
+    }
+  ]
+}

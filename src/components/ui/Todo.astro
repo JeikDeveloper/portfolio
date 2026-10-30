@@ -1,0 +1,30 @@
+---
+/**
+ * Marcador de dato pendiente. Se ve resaltado en desarrollo (npm run dev) y no se
+ * renderiza en producción, así nunca se publica un "[COMPLETAR]".
+ */
+interface Props {
+  text?: string;
+}
+const { text } = Astro.props;
+---
+
+{
+  import.meta.env.DEV && (
+    <mark class="todo">
+      {text ?? <slot />}
+    </mark>
+  )
+}
+
+<style>
+  .todo {
+    display: inline-block;
+    padding: 0.1rem 0.45rem;
+    border: 1px dashed var(--warn);
+    border-radius: var(--radius-s);
+    background: color-mix(in srgb, var(--warn) 12%, transparent);
+    color: var(--text);
+    font-size: var(--step--1);
+  }
+</style>

@@ -1,0 +1,238 @@
+---
+/**
+ * Artículo del blog. Cada artículo existe solo en su idioma (campo `lang`), así que
+ * se genera únicamente bajo /<lang>/blog/<slug>/.
+ */
+import { Image } from 'astro:assets';
+import { render } from 'astro:content';
+import Base from '../../../layouts/Base.astro';
+import Icon from '../../../components/ui/Icon.astro';
+import PostCard from '../../../components/PostCard.astro';
+import YouTube from '../../../components/blog/YouTube.astro';
+import Callout from '../../../components/blog/Callout.astro';
+import '../../../styles/prose.css';
+import { useTranslations, getResume, path, type Lang } from '../../../i18n/utils';
+import { getPosts, readingTime, relatedPosts, formatDate, tagSlug, isTranslation, type Post } from '../../../lib/content';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post) => ({ params: { lang: post.data.lang, slug: post.id }, props: { post, all: posts } }));
+}
+
+interface Props {
+  post: Post;
+  all: Post[];
+}
+
+const { post, all } = Astro.props;
+const lang = Astro.params.lang as Lang;
+const t = useTranslations(lang);
+const r = getResume(lang);
+const { data } = post;
+const { Content, headings } = await render(post);
+// La versión en el otro idioma se enlaza con el selector de idioma, no como relacionado.
+const translation = all.find((p) => isTranslation(post, p));
+const related = relatedPosts(post, all.filter((p) => p !== translation));
+const toc = headings.filter((h) => h.depth === 2);
+
+const ogImage = data.cover && data.cover.format !== 'svg' ? data.cover.src : undefined;
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: data.title,
+  description: data.description,
+  datePublished: data.pubDate.toISOString(),
+  dateModified: (data.updatedDate ?? data.pubDate).toISOString(),
+  inLanguage: lang,
+  author: { '@type': 'Person', name: r.basics.name, url: Astro.site?.href },
+  mainEntityOfPage: new URL(Astro.url.pathname, Astro.site).href,
+  keywords: data.tags.join(', '),
+};
+---
+
+<Base
+  title={`${data.title} — ${r.basics.name}`}
+  description={data.description}
+  type="article"
+  image={ogImage}
+  alternates={{
+    [lang]: path(lang, 'blog', post.id),
+    ...(translation && { [translation.data.lang]: path(translation.data.lang, 'blog', translation.id) }),
+  }}
+  langFallback="blog"
+>
+  <Fragment slot="head">
+    <meta property="article:published_time" content={data.pubDate.toISOString()} />
+    {data.updatedDate && <meta property="article:modified_time" content={data.updatedDate.toISOString()} />}
+    {data.tags.map((tag) => <meta property="article:tag" content={tag} />)}
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </Fragment>
+
+  <article class="container article">
+    <a class="btn btn--ghost btn--sm article__back" href={path(lang, 'blog')}>
+      <Icon name="arrow-left" size={16} />
+      {t('blog.back')}
+    </a>
+
+    <header class="article__head">
+      <p class="article__meta">
+        <a href={`${path(lang, 'blog')}`}>{t(`blog.cat.${data.category}`)}</a>
+        <span aria-hidden="true">·</span>
+        <time datetime={data.pubDate.toISOString()}>{formatDate(data.pubDate, lang)}</time>
+        <span aria-hidden="true">·</span>
+        <span>{readingTime(post)} {t('blog.readingTime')}</span>
+        {data.example && <span class="badge">{t('projects.example')}</span>}
+      </p>
+      <h1 class="article__title">{data.title}</h1>
+      <p class="lead">{data.description}</p>
+      {
+        data.updatedDate && (
+          <p class="article__updated">
+            {t('blog.updated')} <time datetime={data.updatedDate.toISOString()}>{formatDate(data.updatedDate, lang)}</time>
+          </p>
+        )
+      }
+    </header>
+
+    {
+      data.cover && (
+        <figure class="article__cover">
+          <Image
+            src={data.cover}
+            alt={data.coverAlt ?? ''}
+            widths={[640, 960, 1280]}
+            sizes="(min-width: 48rem) 46rem, 100vw"
+            loading="eager"
+            fetchpriority="high"
+          />
+        </figure>
+      )
+    }
+
+    {
+      toc.length > 2 && (
+        <nav class="article__toc" aria-label={lang === 'es' ? 'Índice' : 'Contents'}>
+          <ol>
+            {toc.map((h) => (
+              <li>
+                <a href={`#${h.slug}`}>{h.text}</a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      )
+    }
+
+    <div class="prose">
+      <Content components={{ YouTube, Callout }} />
+    </div>
+
+    {
+      data.tags.length > 0 && (
+        <ul class="chips article__tags" aria-label={t('blog.tags')}>
+          {data.tags.map((tag) => (
+            <li>
+              <a class="chip" href={path(lang, 'blog', 'etiqueta', tagSlug(tag))}>
+                #{tag}
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+
+    {
+      related.length > 0 && (
+        <section class="article__related" aria-labelledby="related-title">
+          <h2 class="article__related-title" id="related-title">
+            {t('blog.related')}
+          </h2>
+          {related.map((p) => (
+            <PostCard post={p} />
+          ))}
+        </section>
+      )
+    }
+  </article>
+</Base>
+
+<style>
+  .article {
+    max-width: 46rem;
+    padding-block: clamp(1.5rem, 5vw, 3rem) 0;
+    display: grid;
+    gap: var(--space-2xl);
+  }
+  .article__back {
+    justify-self: start;
+    margin-left: -0.9rem;
+  }
+  .article__head {
+    display: grid;
+    gap: var(--space-m);
+  }
+  .article__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-xs);
+    margin: 0;
+    font-size: var(--step--1);
+    color: var(--text-subtle);
+  }
+  .article__meta a {
+    color: var(--text-muted);
+    font-weight: 550;
+    text-decoration: none;
+  }
+  .article__title {
+    font-size: var(--step-4);
+    letter-spacing: -0.03em;
+  }
+  .article__head .lead {
+    margin: 0;
+  }
+  .article__updated {
+    margin: 0;
+    font-size: var(--step--1);
+    color: var(--text-subtle);
+  }
+  .article__cover {
+    margin: 0;
+  }
+  .article__cover :global(img) {
+    width: 100%;
+    border-radius: var(--radius-l);
+    border: 1px solid var(--border);
+  }
+  .article__toc {
+    padding: var(--space-m) var(--space-l);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-m);
+    background: var(--bg-subtle);
+    font-size: var(--step--1);
+  }
+  .article__toc ol {
+    margin: 0;
+    padding-left: 1.2rem;
+    display: grid;
+    gap: var(--space-2xs);
+  }
+  .article__toc a {
+    color: var(--text-muted);
+  }
+  .article__tags .chip {
+    text-decoration: none;
+  }
+  .article__related {
+    padding-top: var(--space-xl);
+    border-top: 1px solid var(--border);
+  }
+  .article__related-title {
+    font-size: var(--step-2);
+    margin-bottom: var(--space-s);
+  }
+  .article__related :global(.post:first-of-type) {
+    border-top: 0;
+  }
+</style>

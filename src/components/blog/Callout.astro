@@ -1,0 +1,46 @@
+---
+/** Nota destacada dentro de un artículo: <Callout type="tip">texto</Callout> */
+import { getLangFromUrl, useTranslations } from '../../i18n/utils';
+
+interface Props {
+  type?: 'info' | 'tip' | 'warning';
+}
+
+const { type = 'info' } = Astro.props;
+const t = useTranslations(getLangFromUrl(Astro.url));
+---
+
+<aside class:list={['callout', `callout--${type}`]}>
+  <p class="callout__label">{t(`blog.callout.${type}`)}</p>
+  <div class="callout__body"><slot /></div>
+</aside>
+
+<style>
+  .callout {
+    --tone: var(--accent);
+    margin: var(--space-xl) 0;
+    padding: var(--space-m) var(--space-l);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--tone);
+    border-radius: var(--radius-m);
+    background: var(--bg-subtle);
+  }
+  .callout--tip {
+    --tone: var(--success);
+  }
+  .callout--warning {
+    --tone: var(--warn);
+  }
+  .callout__label {
+    margin: 0 0 var(--space-2xs);
+    font-size: var(--step--1);
+    font-weight: 650;
+    color: var(--text);
+  }
+  .callout__body :global(p) {
+    margin: 0;
+  }
+  .callout__body :global(p + p) {
+    margin-top: var(--space-xs);
+  }
+</style>

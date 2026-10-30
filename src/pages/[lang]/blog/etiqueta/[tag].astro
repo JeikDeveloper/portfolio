@@ -1,0 +1,66 @@
+---
+/** Artículos con una etiqueta: /es/blog/etiqueta/python/ */
+import Base from '../../../../layouts/Base.astro';
+import Icon from '../../../../components/ui/Icon.astro';
+import PostCard from '../../../../components/PostCard.astro';
+import { useTranslations, getResume, path, locales, type Lang } from '../../../../i18n/utils';
+import { getPosts, tagSlug, type Post } from '../../../../lib/content';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return locales.flatMap((lang) => {
+    const own = posts.filter((p) => p.data.lang === lang);
+    const tags = new Map<string, string>(); // slug -> etiqueta original
+    own.forEach((p) => p.data.tags.forEach((tag) => tags.set(tagSlug(tag), tag)));
+    return [...tags].map(([slug, tag]) => ({
+      params: { lang, tag: slug },
+      props: { tag, posts: own.filter((p) => p.data.tags.some((t) => tagSlug(t) === slug)) },
+    }));
+  });
+}
+
+interface Props {
+  tag: string;
+  posts: Post[];
+}
+
+const { tag, posts } = Astro.props;
+const lang = Astro.params.lang as Lang;
+const t = useTranslations(lang);
+const r = getResume(lang);
+const title = `${t('blog.tagTitle')} #${tag}`;
+---
+
+<Base
+  title={`${title} — ${r.basics.name}`}
+  description={`${title}: ${posts.length} ${lang === 'es' ? 'artículos' : 'articles'}.`}
+  alternates={{ [lang]: path(lang, 'blog', 'etiqueta', tagSlug(tag)) }}
+  langFallback="blog"
+>
+  <header class="page-head">
+    <div class="container tag-page">
+      <a class="btn btn--ghost btn--sm tag-page__back" href={path(lang, 'blog')}>
+        <Icon name="arrow-left" size={16} />
+        {t('blog.back')}
+      </a>
+      <h1 class="page-head__title">#{tag}</h1>
+      <p class="page-head__note">{title}</p>
+    </div>
+  </header>
+
+  <section class="container tag-page tag-page__list" aria-label={title}>
+    {posts.map((post) => <PostCard post={post} headingLevel="h2" />)}
+  </section>
+</Base>
+
+<style>
+  .tag-page {
+    max-width: 52rem;
+  }
+  .tag-page__back {
+    margin: 0 0 var(--space-l) -0.9rem;
+  }
+  .tag-page__list {
+    padding-bottom: var(--space-section);
+  }
+</style>

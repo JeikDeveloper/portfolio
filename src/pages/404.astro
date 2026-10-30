@@ -1,0 +1,58 @@
+---
+/**
+ * GitHub Pages sirve este archivo para cualquier ruta que no exista, sin importar
+ * el idioma, así que la página trae un bloque por idioma y el script deja visible
+ * el que corresponde. Sin JavaScript queda el idioma por defecto.
+ */
+import Base from '../layouts/Base.astro';
+import { locales, defaultLang, path, useTranslations } from '../i18n/utils';
+
+const t = useTranslations(defaultLang);
+const blocks = locales.map((code) => ({ code, t: useTranslations(code) }));
+---
+
+<Base title={`404 — ${t('404.title')}`} description={t('404.note')} cta={false} noindex>
+  <section class="container notfound">
+    <p class="notfound__code mono">404</p>
+    {
+      blocks.map(({ code, t }) => (
+        <div data-lang={code} hidden={code !== defaultLang}>
+          <h1 class="notfound__title">{t('404.title')}</h1>
+          <p class="notfound__note">{t('404.note')}</p>
+          <a class="btn btn--primary" href={path(code)}>{t('404.home')}</a>
+        </div>
+      ))
+    }
+  </section>
+
+  <script is:inline>
+    // Inline para que corra antes del primer pintado. La ruta rota conserva el
+    // prefijo de idioma (/en/lo-que-sea); si no coincide con ningún bloque, queda
+    // el que ya viene visible.
+    (() => {
+      const seg = location.pathname.split('/')[1];
+      const blocks = document.querySelectorAll('[data-lang]');
+      if (![...blocks].some((b) => b.dataset.lang === seg)) return;
+      blocks.forEach((b) => (b.hidden = b.dataset.lang !== seg));
+    })();
+  </script>
+</Base>
+
+<style>
+  .notfound {
+    padding-block: clamp(4rem, 14vw, 9rem);
+  }
+  .notfound__code {
+    color: var(--text-subtle);
+    margin-bottom: var(--space-s);
+  }
+  .notfound__title {
+    font-size: var(--step-4);
+    margin-bottom: var(--space-s);
+  }
+  .notfound__note {
+    font-size: var(--step-1);
+    color: var(--text-muted);
+    margin-bottom: var(--space-xl);
+  }
+</style>

@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.astro/
+.DS_Store
+
+# Guía local para Claude Code. No se versiona.
+CLAUDE.md
+
+# Salida del adaptador de Vercel y variables locales
+.vercel/
+.env
+.env.*
+!.env.example

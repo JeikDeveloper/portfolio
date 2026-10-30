@@ -1,0 +1,28 @@
+---
+// Sitio estático: la raíz solo redirige. La preferencia guardada gana sobre el idioma del navegador.
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex" />
+    <title>Jeiber I. Jiménez Bojacá</title>
+    <link rel="alternate" hreflang="es" href="/es/" />
+    <link rel="alternate" hreflang="en" href="/en/" />
+    <link rel="alternate" hreflang="x-default" href="/en/" />
+    <script>
+      let target = 'es';
+      try {
+        const saved = localStorage.getItem('lang');
+        if (saved === 'es' || saved === 'en') target = saved;
+        else if (!navigator.language.toLowerCase().startsWith('es')) target = 'en';
+      } catch {}
+      location.replace('/' + target + '/');
+    </script>
+    <noscript><meta http-equiv="refresh" content="0; url=/es/" /></noscript>
+  </head>
+  <body>
+    <p><a href="/es/">Español</a> · <a href="/en/">English</a></p>
+  </body>
+</html>

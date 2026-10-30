@@ -1,0 +1,82 @@
+---
+import { getLangFromUrl, useTranslations, path } from '../i18n/utils';
+import { readingTime, formatDate, type Post } from '../lib/content';
+
+interface Props {
+  post: Post;
+  headingLevel?: 'h2' | 'h3';
+}
+
+const { post, headingLevel: H = 'h3' } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const { data } = post;
+const href = path(data.lang, 'blog', post.id);
+const search = [data.title, data.description, ...data.tags, t(`blog.cat.${data.category}`)].join(' ').toLowerCase();
+---
+
+<article class="post" data-reveal data-search={search} data-category={data.category}>
+  <p class="post__meta">
+    <time datetime={data.pubDate.toISOString()}>{formatDate(data.pubDate, lang)}</time>
+    <span aria-hidden="true">·</span>
+    <span>{readingTime(post)} {t('blog.readingTime')}</span>
+    {data.example && <span class="badge post__badge">{t('projects.example')}</span>}
+  </p>
+  <H class="post__title">
+    <a href={href} lang={data.lang !== lang ? data.lang : undefined}>{data.title}</a>
+  </H>
+  <p class="post__desc">{data.description}</p>
+  <ul class="chips">
+    <li class="chip chip--strong">{t(`blog.cat.${data.category}`)}</li>
+    {data.tags.map((tag) => <li class="chip">#{tag}</li>)}
+  </ul>
+</article>
+
+<style>
+  .post {
+    position: relative;
+    display: grid;
+    gap: var(--space-xs);
+    padding-block: var(--space-l);
+    border-top: 1px solid var(--border);
+  }
+  .post__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-xs);
+    margin: 0;
+    font-size: var(--step--1);
+    color: var(--text-subtle);
+  }
+  .post__badge {
+    padding-block: 0.05rem;
+  }
+  .post__title {
+    font-size: var(--step-2);
+  }
+  .post__title a {
+    color: var(--text);
+    text-decoration: none;
+  }
+  /* Toda la tarjeta es clicable, pero el enlace sigue siendo solo el título. */
+  .post__title a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+  .post:hover .post__title a {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+  }
+  .post__desc {
+    margin: 0;
+    color: var(--text-muted);
+  }
+  .post[hidden] {
+    display: none;
+  }
+  .chip--strong {
+    color: var(--text);
+  }
+</style>

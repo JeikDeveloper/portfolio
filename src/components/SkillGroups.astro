@@ -1,0 +1,104 @@
+---
+/**
+ * Habilidades por categoría, con años de uso y enlaces a los proyectos donde se
+ * aplicaron. Sin barras de porcentaje: los años y los proyectos dicen más.
+ */
+import Todo from './ui/Todo.astro';
+import { getLangFromUrl, useTranslations, path } from '../i18n/utils';
+import { skillGroups, skillName } from '../data/skills';
+import { getProjects } from '../lib/content';
+import { site } from '../data/site';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const projects = await getProjects();
+const titleOf = (slug: string) => projects.find((p) => p.id === slug)?.data[lang].title;
+const now = new Date().getFullYear();
+
+function years(since: number) {
+  const n = Math.max(1, now - since);
+  return `${n} ${n === 1 ? t('skills.year') : t('skills.years')}`;
+}
+---
+
+<div class="grid grid--3 skills">
+  {
+    skillGroups.map((group) => (
+      <section class="card skills__group" data-reveal aria-labelledby={`skills-${group.id}`}>
+        <h3 class="skills__title" id={`skills-${group.id}`}>
+          {group.title[lang]}
+        </h3>
+        <ul class="skills__list">
+          {group.skills.map((s) => (
+            <li class="skills__item">
+              <span class="skills__name">{skillName(s.name, lang)}</span>
+              {s.since && (
+                <span class="skills__years" title={`${t('skills.since')} ${s.since}`}>
+                  {years(s.since)}
+                </span>
+              )}
+              {s.projects && s.projects.some(titleOf) && (
+                <span class="skills__used">
+                  <span class="visually-hidden">{t('skills.usedIn')}: </span>
+                  {s.projects.filter(titleOf).map((slug) => (
+                    site.showProjects ? <a href={path(lang, 'proyectos', slug)}>{titleOf(slug)}</a> : <span>{titleOf(slug)}</span>
+                  ))}
+                </span>
+              )}
+            </li>
+          ))}
+        </ul>
+        {group.todo && <Todo text={`[COMPLETAR] ${group.todo}`} />}
+      </section>
+    ))
+  }
+</div>
+
+<style>
+  .skills__group {
+    display: grid;
+    align-content: start;
+    gap: var(--space-m);
+  }
+  .skills__title {
+    font-size: var(--step-1);
+  }
+  .skills__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+  }
+  .skills__item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2xs) var(--space-xs);
+    padding-block: 0.45rem;
+    border-top: 1px solid var(--border);
+  }
+  .skills__item:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+  .skills__name {
+    font-weight: 550;
+    margin-right: auto;
+  }
+  .skills__years {
+    font-size: var(--step--1);
+    color: var(--text-subtle);
+    font-variant-numeric: tabular-nums;
+  }
+  .skills__used {
+    flex-basis: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    font-size: var(--step--1);
+  }
+  .skills__used a::before {
+    content: '↳ ';
+    color: var(--text-subtle);
+  }
+</style>

@@ -1,0 +1,44 @@
+---
+import SocialLinks from './SocialLinks.astro';
+import { getLangFromUrl, useTranslations, getResume } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const r = getResume(lang);
+const year = new Date().getFullYear();
+---
+
+<footer class="foot">
+  <div class="container foot__inner">
+    <div class="foot__id">
+      <p class="foot__name">{r.basics.name}</p>
+      <p class="foot__meta">© {year} · {t('footer.built')}</p>
+    </div>
+    <SocialLinks />
+  </div>
+</footer>
+
+<style>
+  .foot {
+    border-top: 1px solid var(--border);
+    padding-block: var(--space-xl);
+    background: var(--bg-subtle);
+  }
+  .foot__inner {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-m) var(--space-xl);
+    justify-content: space-between;
+    align-items: center;
+  }
+  .foot p {
+    margin: 0;
+  }
+  .foot__name {
+    font-weight: 600;
+  }
+  .foot__meta {
+    font-size: var(--step--1);
+    color: var(--text-muted);
+  }
+</style>

@@ -1,0 +1,50 @@
+---
+/** Cierre de página: invita a escribir para empleo o freelance. Lo inserta Base.astro. */
+import ContactButtons from './ContactButtons.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+import { availability } from '../data/about';
+
+const t = useTranslations(getLangFromUrl(Astro.url));
+---
+
+<section class="cta" aria-labelledby="cta-title">
+  <div class="container">
+    <div class="cta__box">
+      <div class="cta__text">
+        <h2 class="cta__title" id="cta-title">{t('cta.title')}</h2>
+        <p class="cta__note">{availability === 'open' ? t('cta.note') : `${t(`avail.${availability}`)} ${t('avail.response')}`}</p>
+      </div>
+      <div class="stack">
+        <ContactButtons />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta {
+    padding-block: var(--space-section);
+  }
+  .cta__box {
+    display: grid;
+    gap: var(--space-l);
+    padding: clamp(1.5rem, 5vw, 3rem);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-l);
+    background: var(--bg-subtle);
+  }
+  .cta__title {
+    font-size: var(--step-2);
+    margin-bottom: var(--space-xs);
+  }
+  .cta__note {
+    color: var(--text-muted);
+    margin: 0;
+  }
+  @media (min-width: 60rem) {
+    .cta__box {
+      grid-template-columns: 1fr auto;
+      align-items: center;
+    }
+  }
+</style>

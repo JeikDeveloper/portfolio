@@ -1,0 +1,206 @@
+---
+/**
+ * Plantilla que Playwright convierte en PDF. No se enlaza desde la navegación
+ * (lleva noindex) y se alimenta del mismo resume.json que el resto del sitio.
+ *   /print/es/visual  -> PDF con diseño
+ *   /print/es/ats     -> PDF plano, pensado para que un ATS lo lea sin perder datos
+ */
+import { locales, getResume, type Lang } from '../../../i18n/utils';
+
+export function getStaticPaths() {
+  return locales.flatMap((lang) =>
+    ['visual', 'ats'].map((variant) => ({ params: { lang, variant } }))
+  );
+}
+
+const lang = Astro.params.lang as Lang;
+const variant = Astro.params.variant as 'visual' | 'ats';
+const r = getResume(lang);
+
+const L =
+  lang === 'es'
+    ? { exp: 'Experiencia', skills: 'Competencias', edu: 'Formación', langs: 'Idiomas', profile: 'Perfil' }
+    : { exp: 'Experience', skills: 'Skills', edu: 'Education', langs: 'Languages', profile: 'Profile' };
+---
+
+<!doctype html>
+<html lang={lang} data-variant={variant}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>{r.basics.name} — CV</title>
+    {
+      variant === 'visual' && (
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400..600&family=IBM+Plex+Mono:wght@400;500&display=swap"
+        />
+      )
+    }
+  </head>
+  <body>
+    <header class="head">
+      <h1>{r.basics.name}</h1>
+      <p class="label">{r.basics.label}</p>
+      <p class="contact">
+        {r.basics.email} · {r.basics.phone} · {r.basics.location.city}, {r.basics.location.countryCode}
+        {r.basics.profiles.map((p) => <span> · {p.network}: {p.url}</span>)}
+      </p>
+    </header>
+
+    <section>
+      <h2>{L.profile}</h2>
+      <p>{r.basics.summary}</p>
+    </section>
+
+    <section>
+      <h2>{L.exp}</h2>
+      {
+        r.work.map((job) => (
+          <article class="job">
+            <h3>
+              {job.position} — {job.name}
+            </h3>
+            <p class="dates">
+              {job.startDate} – {job.endDate}
+            </p>
+            <p>{job.summary}</p>
+            <ul>
+              {job.highlights.map((h) => (
+                <li>{h}</li>
+              ))}
+            </ul>
+          </article>
+        ))
+      }
+    </section>
+
+    <section>
+      <h2>{L.skills}</h2>
+      <ul class="skills">
+        {
+          r.skills.map((s) => (
+            <li>
+              <strong>{s.name}:</strong> {s.keywords.join(', ')}.
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section>
+      <h2>{L.edu}</h2>
+      <ul>
+        {
+          r.education.map((e) => (
+            <li>
+              <strong>{e.area}</strong> — {e.institution}. {e.studyType}, {e.endDate}.
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section>
+      <h2>{L.langs}</h2>
+      <ul>
+        {r.languages.map((l) => <li>{l.language} — {l.fluency}</li>)}
+      </ul>
+    </section>
+
+    <style is:global>
+      @page {
+        size: A4;
+        margin: 16mm 15mm;
+      }
+      /* Todo va dentro de html[data-variant], atributo que solo tienen estas páginas.
+         El bundle de CSS es único (cssCodeSplit: false): una regla fuera de este bloque
+         se filtraría a todo el sitio. */
+      html[data-variant] {
+        * {
+          box-sizing: border-box;
+        }
+        /* base.css también llega acá. Se anula lo que no tiene sentido en papel: la
+           retícula decorativa y la tipografía de display, que no se carga en print. */
+        body::before {
+          content: none;
+        }
+        h1,
+        h2,
+        h3 {
+          font-family: inherit;
+          line-height: 1.2;
+        }
+        body {
+          margin: 0;
+          color: #14181a;
+          background: #fff;
+          font-family: 'Newsreader', Georgia, serif;
+          font-size: 10.4pt;
+          line-height: 1.45;
+        }
+        h1 {
+          font-size: 22pt;
+          margin: 0;
+          letter-spacing: -0.02em;
+        }
+        h2 {
+          font-size: 11pt;
+          text-transform: uppercase;
+          letter-spacing: 0.14em;
+          margin: 14pt 0 6pt;
+          padding-bottom: 3pt;
+          border-bottom: 0.6pt solid #b9c2c4;
+        }
+        h3 {
+          font-size: 11.5pt;
+          margin: 9pt 0 1pt;
+        }
+        p {
+          margin: 0 0 5pt;
+        }
+        ul {
+          margin: 4pt 0 0;
+          padding-left: 14pt;
+        }
+        li {
+          margin-bottom: 3pt;
+        }
+        .label {
+          font-weight: 600;
+        }
+        .contact,
+        .dates {
+          font-family: 'IBM Plex Mono', monospace;
+          font-size: 8.4pt;
+          color: #4a585c;
+        }
+        .job {
+          break-inside: avoid;
+        }
+        section {
+          break-inside: auto;
+        }
+      }
+
+      /* Variante ATS: sin color, sin fuentes externas, sin adornos.
+         Un parser tiene que poder leerla de arriba abajo sin ambigüedad. */
+      html[data-variant='ats'] body {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 11pt;
+        color: #000;
+      }
+      html[data-variant='ats'] h2 {
+        border-bottom: none;
+        letter-spacing: 0;
+        font-size: 12pt;
+      }
+      html[data-variant='ats'] .contact,
+      html[data-variant='ats'] .dates {
+        font-family: Arial, Helvetica, sans-serif;
+        color: #000;
+        font-size: 10pt;
+      }
+    </style>
+  </body>
+</html>

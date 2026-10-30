@@ -1,0 +1,101 @@
+/* ---------------------------------------------------------------
+   Tokens del sistema de diseño.
+   Paleta neutra (escala zinc) con un solo acento azul.
+   Los componentes usan solo nombres semánticos (--bg, --text...),
+   nunca colores directos: así el modo oscuro es cambiar este archivo.
+----------------------------------------------------------------*/
+:root {
+  color-scheme: light;
+
+  /* Color — modo claro */
+  --bg: #ffffff;
+  --bg-subtle: #fafafa;
+  --surface: #f4f4f5;
+  --border: #e4e4e7;
+  --border-strong: #d4d4d8;
+  --text: #18181b;
+  --text-muted: #52525b;
+  --text-subtle: #6b6b74;
+  --accent: #1d4ed8;
+  --accent-soft: #eff4ff;
+  --on-accent: #ffffff;
+  --success: #15803d;
+  --danger: #b91c1c;
+  --warn: #a16207;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.04), 0 4px 16px rgb(0 0 0 / 0.04);
+
+  /* Tipografía */
+  --font-sans: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Consolas, monospace;
+
+  --step--1: clamp(0.8rem, 0.78rem + 0.1vw, 0.86rem);
+  --step-0: clamp(1rem, 0.97rem + 0.15vw, 1.06rem);
+  --step-1: clamp(1.15rem, 1.09rem + 0.3vw, 1.3rem);
+  --step-2: clamp(1.4rem, 1.27rem + 0.6vw, 1.75rem);
+  --step-3: clamp(1.8rem, 1.55rem + 1.2vw, 2.5rem);
+  --step-4: clamp(2.3rem, 1.8rem + 2.6vw, 4rem);
+
+  /* Espaciado (escala de 4px) */
+  --space-2xs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-s: 0.75rem;
+  --space-m: 1rem;
+  --space-l: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
+  --space-section: clamp(4rem, 10vw, 7rem);
+
+  /* Estructura */
+  --measure: 65ch;
+  --container: 72rem;
+  --header-h: 4rem;
+  --radius-s: 6px;
+  --radius-m: 10px;
+  --radius-l: 16px;
+  --radius-full: 999px;
+  --ease: cubic-bezier(0.2, 0.6, 0.2, 1);
+  --duration: 0.2s;
+}
+
+/* Modo oscuro: elegido a mano... */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #0b0b0d;
+  --bg-subtle: #111114;
+  --surface: #18181b;
+  --border: #27272a;
+  --border-strong: #3f3f46;
+  --text: #fafafa;
+  --text-muted: #a1a1aa;
+  --text-subtle: #8c8c95;
+  --accent: #8ab4ff;
+  --accent-soft: #15203a;
+  --on-accent: #0b0b0d;
+  --success: #4ade80;
+  --danger: #f87171;
+  --warn: #facc15;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 4px 16px rgb(0 0 0 / 0.25);
+}
+
+/* ...o heredado del sistema cuando no hay preferencia guardada. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --bg: #0b0b0d;
+    --bg-subtle: #111114;
+    --surface: #18181b;
+    --border: #27272a;
+    --border-strong: #3f3f46;
+    --text: #fafafa;
+    --text-muted: #a1a1aa;
+    --text-subtle: #8c8c95;
+    --accent: #8ab4ff;
+    --accent-soft: #15203a;
+    --on-accent: #0b0b0d;
+    --success: #4ade80;
+    --danger: #f87171;
+    --warn: #facc15;
+    --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 4px 16px rgb(0 0 0 / 0.25);
+  }
+}

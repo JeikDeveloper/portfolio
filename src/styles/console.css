@@ -1,0 +1,184 @@
+/* Superficie común de los tres demos. Un solo lenguaje visual para todo lo ejecutable. */
+.console {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m);
+  background: color-mix(in srgb, var(--surface) 65%, transparent);
+  overflow: hidden;
+}
+
+.console__bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-s);
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.console__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--text-muted);
+}
+
+.console__actions {
+  display: inline-flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.console__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--border-strong);
+  flex: none;
+}
+.console__dot.is-run {
+  background: var(--accent);
+}
+.console__dot.is-ok {
+  background: var(--success);
+}
+.console__dot.is-bad {
+  background: var(--danger);
+}
+
+.console .btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Etapas del pipeline */
+.stages {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.stage {
+  display: grid;
+  grid-template-columns: 2.5rem 1fr auto;
+  align-items: center;
+  gap: var(--space-s);
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--text-muted);
+  transition: color 0.3s var(--ease), background 0.3s var(--ease);
+}
+
+.stage--active {
+  color: var(--text);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+.stage--done {
+  color: var(--text);
+}
+.stage--done .stage__idx {
+  color: var(--success);
+}
+.stage--active .stage__idx {
+  color: var(--accent);
+}
+
+.stage__name {
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Medidores */
+.meters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-l);
+  margin: 0;
+  padding: 0.9rem 1rem;
+  font-family: var(--font-mono);
+}
+.meters dt {
+  font-size: var(--step--1);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.meters dd {
+  margin: 0.2rem 0 0;
+  font-size: var(--step-1);
+  color: var(--text);
+}
+.meters dd.is-warn {
+  color: var(--danger);
+}
+
+/* Selector de rutas y viewports */
+.routes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.route {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-m);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  gap: 0.5em;
+  transition: color 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+.route:hover {
+  color: var(--text);
+  border-color: var(--text);
+}
+.route.is-active {
+  color: var(--on-accent);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.route__method {
+  font-weight: 500;
+}
+
+.payload {
+  margin: 0;
+  padding: 1rem;
+  border-top: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  line-height: 1.7;
+  color: var(--text-muted);
+  max-height: 22rem;
+  overflow: auto;
+}
+
+/* Marco de previsualización */
+.frame {
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+  background: color-mix(in srgb, var(--bg) 60%, transparent);
+}
+.frame__stage {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m);
+  overflow: hidden;
+  transition: max-width 0.35s var(--ease);
+}
+
+.console__link {
+  font-size: var(--step--1);
+  font-weight: 550;
+}

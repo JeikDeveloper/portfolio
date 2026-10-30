@@ -1,0 +1,89 @@
+---
+/**
+ * Cifras destacadas. Todas se calculan del contenido real (CV, habilidades,
+ * proyectos, artículos y GitHub): nada se escribe a mano. Las que valen 0 o
+ * son de ejemplo no se muestran.
+ */
+import { getLangFromUrl, useTranslations, getResume, path } from '../i18n/utils';
+import { skillCount } from '../data/skills';
+import { getProjects, getPosts } from '../lib/content';
+import { getGitHub } from '../lib/github';
+import { site } from '../data/site';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const r = getResume(lang);
+
+const starts = r.work.map((w) => parseInt(w.startDate, 10)).filter(Number.isFinite);
+const years = starts.length ? new Date().getFullYear() - Math.min(...starts) : 0;
+const projects = site.showProjects ? (await getProjects()).filter((p) => !p.data.example).length : 0;
+const posts = (await getPosts()).filter((p) => !p.data.example && !p.data.draft).length;
+const gh = await getGitHub();
+
+const items = [
+  { value: years, label: t('stats.years'), href: path(lang, 'sobre-mi') },
+  { value: r.work.length, label: t('stats.companies'), href: path(lang, 'sobre-mi') },
+  { value: skillCount, label: t('stats.techs'), href: '#habilidades' },
+  { value: projects, label: projects === 1 ? t('stats.project') : t('stats.projects'), href: path(lang, 'proyectos') },
+  { value: posts, label: posts === 1 ? t('stats.post') : t('stats.posts'), href: path(lang, 'blog') },
+  { value: gh?.publicRepos ?? 0, label: t('stats.repos'), href: gh?.profileUrl },
+].filter((i) => i.value > 0);
+---
+
+{
+  items.length > 0 && (
+    <section class="container" aria-label={t('stats.label')}>
+      <ul class="stats">
+        {items.map((i) => (
+          <li class="stats__item" data-reveal>
+            <a class="stats__link" href={i.href} {...(i.href?.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
+              <span class="stats__value">{i.value}</span>
+              <span class="stats__label">{i.label}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
+<style>
+  .stats {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+    border: 1px solid var(--border);
+    border-radius: var(--radius-l);
+    overflow: hidden;
+    background: var(--border);
+    gap: 1px;
+  }
+  .stats__item {
+    background: var(--bg);
+  }
+  .stats__link {
+    display: grid;
+    gap: 0.25rem;
+    height: 100%;
+    padding: var(--space-m) var(--space-l);
+    color: inherit;
+    text-decoration: none;
+    transition: background-color 0.2s var(--ease);
+  }
+  .stats__link:hover {
+    background: var(--bg-subtle);
+  }
+  .stats__value {
+    font-size: var(--step-3);
+    font-weight: 650;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+  }
+  .stats__label {
+    font-size: var(--step--1);
+    color: var(--text-muted);
+  }
+</style>

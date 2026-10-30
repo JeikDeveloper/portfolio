@@ -1,0 +1,133 @@
+---
+import Base from '../../layouts/Base.astro';
+import Icon, { type IconName } from '../../components/ui/Icon.astro';
+import StatusBadge from '../../components/StatusBadge.astro';
+import { langStaticPaths, useTranslations, getResume, whatsappUrl, type Lang } from '../../i18n/utils';
+
+export function getStaticPaths() {
+  return langStaticPaths();
+}
+
+const lang = Astro.params.lang as Lang;
+const t = useTranslations(lang);
+const r = getResume(lang);
+
+const icons: Record<string, IconName> = { GitHub: 'github', LinkedIn: 'linkedin' };
+const channels: { label: string; value: string; href: string; icon: IconName; external?: boolean }[] = [
+  { label: t('contact.email'), value: r.basics.email, href: `mailto:${r.basics.email}`, icon: 'mail' },
+  { label: 'WhatsApp', value: r.basics.phone, href: whatsappUrl(lang), icon: 'whatsapp', external: true },
+  ...r.basics.profiles.map((p) => ({
+    label: p.network,
+    value: p.username,
+    href: p.url,
+    icon: icons[p.network] ?? 'external',
+    external: true,
+  })),
+];
+---
+
+<Base title={`${t('contact.title')} — ${r.basics.name}`} description={t('contact.note')} cta={false}>
+  <header class="page-head">
+    <div class="container">
+      <StatusBadge />
+      <h1 class="page-head__title">{t('contact.title')}</h1>
+      <p class="page-head__note">{t('cta.note')}</p>
+    </div>
+  </header>
+
+  <section class="container contact" aria-labelledby="channels-title">
+    <h2 class="contact__h2" id="channels-title">{t('contact.channels')}</h2>
+    <p class="muted contact__note">{t('contact.channelsNote')}</p>
+
+    <ul class="contact__grid">
+      {
+        channels.map((c) => (
+          <li>
+            <a
+              class="card card--link contact__item"
+              href={c.href}
+              {...(c.external ? { target: '_blank', rel: 'me noopener noreferrer' } : {})}
+            >
+              <span class="contact__icon">
+                <Icon name={c.icon} size={20} />
+              </span>
+              <span class="contact__text">
+                <span class="contact__label">{c.label}</span>
+                <span class="contact__value">{c.value}</span>
+              </span>
+              <Icon name={c.external ? 'external' : 'arrow-right'} size={16} />
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <a class="btn btn--secondary" href={`/cv/jeiber-jimenez-${lang}.pdf`} download>
+      <Icon name="download" size={16} />
+      {t('hero.cta.cv')}
+    </a>
+  </section>
+</Base>
+
+<style>
+  .page-head :global(.status) {
+    margin-bottom: var(--space-m);
+  }
+  .contact {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-l);
+    padding-bottom: var(--space-section);
+  }
+  .contact__h2 {
+    font-size: var(--step-1);
+    margin: 0;
+  }
+  .contact__note {
+    margin: calc(var(--space-m) * -1) 0 0;
+  }
+  .contact__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-m);
+    width: 100%;
+  }
+  @media (min-width: 48rem) {
+    .contact__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  .contact__item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--space-m);
+    height: 100%;
+    color: var(--text);
+    text-decoration: none;
+  }
+  .contact__item > :global(svg:last-child) {
+    color: var(--text-subtle);
+  }
+  .contact__icon {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-m);
+    background: var(--bg);
+  }
+  .contact__label {
+    display: block;
+    font-size: var(--step--1);
+    color: var(--text-subtle);
+  }
+  .contact__value {
+    display: block;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+</style>

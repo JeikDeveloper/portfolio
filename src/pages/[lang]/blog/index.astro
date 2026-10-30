@@ -1,0 +1,223 @@
+---
+import Base from '../../../layouts/Base.astro';
+import PostCard from '../../../components/PostCard.astro';
+import { langStaticPaths, useTranslations, getResume, path, type Lang } from '../../../i18n/utils';
+import { getPosts, tagSlug, isTranslation } from '../../../lib/content';
+
+export function getStaticPaths() {
+  return langStaticPaths();
+}
+
+const lang = Astro.params.lang as Lang;
+const t = useTranslations(lang);
+const r = getResume(lang);
+const all = await getPosts();
+const own = all.filter((p) => p.data.lang === lang);
+// Del otro idioma, solo los que no tienen versión en este.
+const other = all.filter((p) => p.data.lang !== lang && !own.some((o) => isTranslation(o, p)));
+
+const categories = [...new Set(all.map((p) => p.data.category))];
+const tags = [...new Set(own.flatMap((p) => p.data.tags))].sort();
+---
+
+<Base title={`${t('blog.title')} — ${r.basics.name}`} description={t('blog.note')}>
+  <link slot="head" rel="alternate" type="application/rss+xml" title={`${t('blog.title')} — ${r.basics.name}`} href={`/${lang}/rss.xml`} />
+
+  <header class="page-head">
+    <div class="container">
+      <h1 class="page-head__title">{t('blog.title')}</h1>
+      <p class="page-head__note">{t('blog.note')}</p>
+    </div>
+  </header>
+
+  <section class="container blog" aria-label={t('blog.title')}>
+    {
+      all.length > 0 && (
+        <div class="blog__tools" data-blog-tools>
+          <label class="visually-hidden" for="blog-search">
+            {t('blog.search')}
+          </label>
+          <input
+            class="blog__search"
+            id="blog-search"
+            type="search"
+            placeholder={t('blog.searchPlaceholder')}
+            autocomplete="off"
+            data-blog-search
+          />
+          <div class="blog__cats" role="group" aria-label={t('blog.tags')}>
+            <button type="button" class="filter__opt" aria-pressed="true" data-cat="">
+              {t('blog.allCategories')}
+            </button>
+            {categories.map((c) => (
+              <button type="button" class="filter__opt" aria-pressed="false" data-cat={c}>
+                {t(`blog.cat.${c}`)}
+              </button>
+            ))}
+          </div>
+        </div>
+      )
+    }
+
+    <div class="blog__list" data-blog-list>
+      {own.length === 0 && <p class="muted">{t('blog.empty')}</p>}
+      {own.map((post) => <PostCard post={post} headingLevel="h2" />)}
+
+      {
+        other.length > 0 && (
+          <section class="blog__other" aria-labelledby="other-lang">
+            <h2 class="blog__other-title" id="other-lang">
+              {t('blog.otherLang')}
+            </h2>
+            {other.map((post) => (
+              <PostCard post={post} />
+            ))}
+          </section>
+        )
+      }
+    </div>
+    <p class="muted" data-blog-empty hidden>{t('blog.noResults')}</p>
+    <p class="visually-hidden" aria-live="polite" data-blog-count></p>
+
+    {
+      tags.length > 0 && (
+        <nav class="blog__tags" aria-label={t('blog.tags')}>
+          <h2 class="blog__tags-title">{t('blog.tags')}</h2>
+          <ul class="chips">
+            {tags.map((tag) => (
+              <li>
+                <a class="chip" href={path(lang, 'blog', 'etiqueta', tagSlug(tag))}>
+                  #{tag}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )
+    }
+  </section>
+</Base>
+
+<script>
+  // Búsqueda y filtro en el navegador: con pocas decenas de artículos es instantáneo
+  // y no necesita servidor ni índice externo.
+  const input = document.querySelector<HTMLInputElement>('[data-blog-search]');
+  const tools = document.querySelector<HTMLElement>('[data-blog-tools]');
+  const posts = [...document.querySelectorAll<HTMLElement>('[data-blog-list] [data-search]')];
+  const other = document.querySelector<HTMLElement>('.blog__other');
+  const empty = document.querySelector<HTMLElement>('[data-blog-empty]');
+  const count = document.querySelector<HTMLElement>('[data-blog-count]');
+  let category = '';
+
+  const normalize = (s: string) =>
+    s
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '');
+
+  function apply() {
+    const words = normalize(input?.value ?? '').split(/\s+/).filter(Boolean);
+    let shown = 0;
+    posts.forEach((post) => {
+      const text = normalize(post.dataset.search ?? '');
+      const match = (!category || post.dataset.category === category) && words.every((w) => text.includes(w));
+      post.hidden = !match;
+      if (match) {
+        shown++;
+        post.classList.add('is-visible');
+      }
+    });
+    if (other) other.hidden = !other.querySelector('[data-search]:not([hidden])');
+    if (empty) empty.hidden = shown > 0;
+    if (count) count.textContent = String(shown);
+  }
+
+  input?.addEventListener('input', apply);
+  tools?.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('button[data-cat]');
+    if (!btn) return;
+    category = btn.dataset.cat ?? '';
+    tools.querySelectorAll('button[data-cat]').forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+    apply();
+  });
+</script>
+
+<style>
+  .blog {
+    padding-bottom: var(--space-section);
+  }
+  /* Ancho de lectura cómodo, alineado a la izquierda con el título de la página. */
+  .blog > * {
+    max-width: 52rem;
+  }
+  .blog__tools {
+    display: grid;
+    gap: var(--space-m);
+    margin-bottom: var(--space-xl);
+  }
+  .blog__search {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-full);
+    background: var(--bg);
+    color: var(--text);
+    font: inherit;
+  }
+  .blog__search:focus-visible {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
+  }
+  .blog__cats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+  }
+  .filter__opt {
+    padding: 0.4rem 0.85rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-full);
+    background: var(--bg);
+    color: var(--text-muted);
+    font: inherit;
+    font-size: var(--step--1);
+    cursor: pointer;
+  }
+  .filter__opt:hover {
+    color: var(--text);
+    border-color: var(--border-strong);
+  }
+  .filter__opt[aria-pressed='true'] {
+    background: var(--text);
+    border-color: var(--text);
+    color: var(--bg);
+  }
+  .blog__other {
+    margin-top: var(--space-2xl);
+  }
+  .blog__other[hidden] {
+    display: none;
+  }
+  .blog__other-title {
+    font-size: var(--step-1);
+    color: var(--text-muted);
+    margin-bottom: var(--space-xs);
+  }
+  .blog__tags {
+    margin-top: var(--space-3xl);
+    padding-top: var(--space-xl);
+    border-top: 1px solid var(--border);
+  }
+  .blog__tags-title {
+    font-size: var(--step-0);
+    margin-bottom: var(--space-s);
+  }
+  .blog__tags .chip {
+    text-decoration: none;
+  }
+  .blog__tags .chip:hover {
+    color: var(--text);
+    border-color: var(--border-strong);
+  }
+</style>

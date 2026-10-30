@@ -1,0 +1,98 @@
+---
+/** Un punto de la línea de tiempo (empleo o formación). */
+interface Props {
+  name: string;
+  position: string;
+  startDate?: string;
+  endDate: string;
+  summary?: string;
+  highlights?: string[];
+}
+
+const { name, position, startDate, endDate, summary, highlights = [] } = Astro.props;
+const dates = startDate ? `${startDate} — ${endDate}` : endDate;
+---
+
+<li class="tl" data-reveal>
+  <p class="tl__dates mono">{dates}</p>
+  <div class="tl__body">
+    <h3 class="tl__role">{position}</h3>
+    <p class="tl__org">{name}</p>
+    {summary && <p class="tl__summary">{summary}</p>}
+    {
+      highlights.length > 0 && (
+        <ul class="list-dash">
+          {highlights.map((h) => (
+            <li>{h}</li>
+          ))}
+        </ul>
+      )
+    }
+  </div>
+</li>
+
+<style>
+  .tl {
+    position: relative;
+    display: grid;
+    gap: var(--space-xs);
+    padding: 0 0 var(--space-2xl) var(--space-xl);
+    border-left: 1px solid var(--border);
+  }
+  .tl:last-child {
+    padding-bottom: 0;
+  }
+  /* Punto sobre la línea */
+  .tl::before {
+    content: '';
+    position: absolute;
+    left: -5px;
+    top: 0.45em;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--text);
+  }
+  .tl__dates {
+    margin: 0;
+    color: var(--text-subtle);
+  }
+  .tl__role {
+    font-size: var(--step-2);
+  }
+  .tl__org {
+    margin: 0.15rem 0 var(--space-s);
+    font-weight: 550;
+    color: var(--text-muted);
+  }
+  .tl__summary {
+    margin-bottom: var(--space-s);
+  }
+  @media (min-width: 48rem) {
+    .tl {
+      grid-template-columns: 9rem 1fr;
+      gap: var(--space-xl);
+      padding: 0;
+      border-left: 0;
+    }
+    .tl__body {
+      padding-bottom: var(--space-2xl);
+    }
+    .tl:last-child .tl__body {
+      padding-bottom: 0;
+    }
+    .tl__dates {
+      text-align: right;
+      padding-top: 0.3em;
+    }
+    .tl__body {
+      position: relative;
+      padding-left: var(--space-xl);
+      border-left: 1px solid var(--border);
+    }
+    .tl::before {
+      left: calc(9rem + var(--space-xl) - 4px);
+    }
+  }
+</style>

@@ -1,0 +1,47 @@
+---
+interface Props {
+  name: string;
+  level?: string;
+  summary?: string;
+  keywords: string[];
+}
+
+const { name, level, summary, keywords } = Astro.props;
+---
+
+<article class="card skill" data-reveal>
+  <header class="skill__head">
+    <h3 class="skill__name">{name}</h3>
+    {level && <span class="badge skill__level">{level}</span>}
+  </header>
+  {summary && <p class="skill__summary">{summary}</p>}
+  <ul class="chips">
+    {keywords.map((k) => <li class="chip">{k}</li>)}
+  </ul>
+</article>
+
+<style>
+  .skill {
+    display: grid;
+    align-content: start;
+    gap: var(--space-s);
+  }
+  .skill__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-xs);
+  }
+  .skill__name {
+    font-size: var(--step-1);
+  }
+  .skill__level {
+    padding-block: 0.15rem;
+  }
+  .skill__summary {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.95em;
+  }
+</style>

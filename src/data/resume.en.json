@@ -1,0 +1,217 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jsonresume/resume-schema/v1.0.0/schema.json",
+  "meta": {
+    "version": "2026.10",
+    "lastModified": "2026-10-29",
+    "language": "en"
+  },
+  "basics": {
+    "name": "Jeiber I. Jimenez Bojaca",
+    "label": "Python Developer · AI engineering, agents & automation",
+    "email": "jeiber2001@gmail.com",
+    "phone": "+57 321 960 5408",
+    "url": "https://jeikdeveloper.vercel.app",
+    "summary": "Python developer with five years getting AI into production and automating the processes around it. In insurance I trained computer vision models that decide on real claims and documents; today, in consulting, I build LLM agents, automations on AWS and n8n, and extraction systems that run without manual intervention, and I have been the technical lead on several projects. I care about the whole problem, from the business to the deployment.",
+    "location": {
+      "city": "Bogota",
+      "region": "Bogota D.C.",
+      "countryCode": "CO"
+    },
+    "profiles": [
+      {
+        "network": "GitHub",
+        "username": "JeikDeveloper",
+        "url": "https://github.com/JeikDeveloper"
+      },
+      {
+        "network": "LinkedIn",
+        "username": "Jeiber I. Jimenez Bojaca",
+        "url": "https://www.linkedin.com/in/jeiber-jimenez-python/"
+      }
+    ]
+  },
+  "work": [
+    {
+      "name": "Tata Consultancy Services",
+      "position": "Developer",
+      "startDate": "2023",
+      "endDate": "Present",
+      "summary": "Full-lifecycle engineering on AWS, from concept to deployment: process automation with serverless services, data platforms and AI solutions — custom models, LLM agents and n8n workflows — wired into business decisions. I took on the technical lead role on several projects.",
+      "highlights": [
+        "Took on the technical lead role on several projects: guided the team through technical decisions and was accountable for delivery.",
+        "Built LLM agents on AWS Bedrock, orchestrated with LangChain and LlamaIndex: they query internal sources and take steps using tools, instead of returning loose text.",
+        "Built n8n automation workflows that connect agents and language models with internal systems and external APIs, with no manual steps in between.",
+        "Trained and integrated custom machine learning models in SageMaker to automate business decisions a person used to make.",
+        "Automated business processes with AWS services: event-driven Lambda functions, S3 storage and CloudWatch monitoring, plus API Gateway and RDS where data had to be exposed or stored. What used to be done by hand now runs on its own and leaves a record.",
+        "Orchestrated ETL pipelines with Glue and S3, with separate zones and schema validation as a gate: data that fails never reaches the dashboard.",
+        "Built Python extraction systems that stand up to anti-bot protections — CAPTCHA, IP rotation and dynamic payloads — to secure high-value external sources.",
+        "Automated internal processes in Python that were done by hand, and built custom tooling in Java and VBA for daily operations.",
+        "Designed high-availability SQL architectures and tuned queries for predictive analytics and real-time reporting.",
+        "Delivered executive Power BI dashboards that turn technical metrics into decisions."
+      ]
+    },
+    {
+      "name": "LisaInsurtech",
+      "position": "Python Developer for AI",
+      "startDate": "2022",
+      "endDate": "2023",
+      "summary": "On the Artificial Intelligence team of an insurtech: I took custom models to production to automate decisions that used to depend on a person looking at photos and documents.",
+      "highlights": [
+        "Trained and shipped computer vision models that read the photos of a claim: they assess the damage and flag images that do not match what was reported.",
+        "Added automatic document verification — IDs, policies, invoices: data extraction plus legibility and authenticity checks before a case reaches an analyst.",
+        "Wired those models into real-time fraud detection: a suspicious claim is flagged on the spot, not days later.",
+        "Automated claims handling: standard cases resolve themselves and the team focuses on the hard ones.",
+        "Built NLP chatbots for customer service and sharpened customer segmentation.",
+        "Led the MLOps pipelines — retraining, versioning and monitoring — so models do not degrade silently."
+      ]
+    },
+    {
+      "name": "Tic Social",
+      "position": "Python Backend Developer",
+      "startDate": "2021",
+      "endDate": "2022",
+      "summary": "Backend work for healthcare organizations, in direct contact with the client.",
+      "highlights": [
+        "Integrated Celery to move heavy tasks out of the HTTP request, where they were blocking the API.",
+        "Built and maintained Django REST Framework APIs, with unit tests over the critical logic.",
+        "Optimized SQL queries and database structure where volume was starting to hurt."
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "name": "Backend & architecture",
+      "level": "Expert",
+      "summary": "Scalable, object-oriented solutions.",
+      "keywords": [
+        "Python",
+        "Django",
+        "FastAPI",
+        "Flask",
+        "Java",
+        "Multithreading",
+        "RESTful APIs"
+      ]
+    },
+    {
+      "name": "Cloud computing",
+      "level": "Advanced",
+      "summary": "Serverless architecture and process automation on AWS.",
+      "keywords": [
+        "AWS",
+        "Lambda",
+        "S3",
+        "CloudWatch",
+        "API Gateway",
+        "Glue",
+        "RDS",
+        "Bedrock",
+        "SageMaker"
+      ]
+    },
+    {
+      "name": "AI, agents & automation",
+      "level": "Advanced",
+      "summary": "Custom models, LLM agents and automations in production: vision, text and decision-making.",
+      "keywords": [
+        "LLM agents",
+        "LangChain",
+        "LlamaIndex",
+        "n8n",
+        "Process automation",
+        "Computer vision",
+        "OCR",
+        "NLP",
+        "MLOps",
+        "Fraud detection"
+      ]
+    },
+    {
+      "name": "Advanced web scraping",
+      "level": "Expert",
+      "summary": "Complex extraction, CAPTCHA solving and anti-bot evasion.",
+      "keywords": [
+        "Selenium",
+        "Playwright",
+        "IP rotation",
+        "Dynamic payloads"
+      ]
+    },
+    {
+      "name": "Frontend",
+      "level": "Intermediate",
+      "summary": "Web interfaces and sites for the products I build.",
+      "keywords": [
+        "React",
+        "Next.js",
+        "TypeScript",
+        "Tailwind CSS",
+        "Astro"
+      ]
+    },
+    {
+      "name": "Data management",
+      "level": "Advanced",
+      "summary": "High-performance database optimization.",
+      "keywords": [
+        "SQL",
+        "NoSQL",
+        "Data modeling",
+        "Query tuning"
+      ]
+    },
+    {
+      "name": "Business intelligence",
+      "level": "Advanced",
+      "summary": "Strategic reporting and process automation.",
+      "keywords": [
+        "Power BI",
+        "Excel VBA",
+        "DAX"
+      ]
+    },
+    {
+      "name": "DevOps & tools",
+      "level": "Proficient",
+      "summary": "Continuous integration and agile collaboration.",
+      "keywords": [
+        "Git",
+        "CI/CD",
+        "Agile",
+        "Docker"
+      ]
+    },
+    {
+      "name": "Soft skills",
+      "summary": "How I work with teams and clients.",
+      "keywords": [
+        "Technical leadership",
+        "Client and business communication",
+        "Turning business needs into technical solutions",
+        "Teamwork",
+        "Problem solving",
+        "Ownership and autonomy",
+        "Continuous learning"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "institution": "Universidad Manuela Beltran",
+      "area": "Software Engineering",
+      "studyType": "Bachelor's degree",
+      "endDate": "In progress",
+      "location": "Bogota, Colombia"
+    }
+  ],
+  "languages": [
+    {
+      "language": "Spanish",
+      "fluency": "Native"
+    },
+    {
+      "language": "English",
+      "fluency": "B1 — Intermediate"
+    }
+  ]
+}

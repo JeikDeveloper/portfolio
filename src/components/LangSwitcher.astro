@@ -1,0 +1,64 @@
+---
+import { getLangFromUrl, useTranslations, alternatePath, locales, languages, path, type Lang } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const { alternates, langFallback } = Astro.locals;
+
+/** Misma página en el otro idioma; si no existe, la sección de respaldo en ese idioma. */
+function hrefFor(code: Lang) {
+  if (!alternates) return alternatePath(Astro.url, code);
+  return alternates[code] ?? path(code, ...(langFallback ? [langFallback] : []));
+}
+---
+
+<div class="lang" role="group" aria-label={t('lang.switch')}>
+  {
+    locales.map((code) => (
+      <a
+        href={hrefFor(code)}
+        hreflang={code}
+        lang={code}
+        class:list={['lang__opt', { 'is-active': code === lang }]}
+        aria-current={code === lang ? 'true' : undefined}
+      >
+        <span aria-hidden="true">{code.toUpperCase()}</span>
+        <span class="visually-hidden">{languages[code]}</span>
+      </a>
+    ))
+  }
+</div>
+
+<script>
+  // Guarda la preferencia para la próxima visita. La URL siempre manda sobre esto.
+  try {
+    localStorage.setItem('lang', document.documentElement.lang);
+  } catch {}
+</script>
+
+<style>
+  .lang {
+    display: inline-flex;
+    padding: 3px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-full);
+    background: var(--bg-subtle);
+  }
+  .lang__opt {
+    padding: 0.25rem 0.65rem;
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+    text-decoration: none;
+  }
+  .lang__opt.is-active {
+    background: var(--bg);
+    color: var(--text);
+    box-shadow: var(--shadow);
+  }
+  .lang__opt:not(.is-active):hover {
+    color: var(--text);
+  }
+</style>

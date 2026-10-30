@@ -1,0 +1,280 @@
+---
+/** Caso de estudio: contexto → problema → qué construí → resultados → decisiones → demo. */
+import { Image } from 'astro:assets';
+import Base from '../../../layouts/Base.astro';
+import Icon from '../../../components/ui/Icon.astro';
+import Todo from '../../../components/ui/Todo.astro';
+import '../../../styles/console.css';
+import ScrapePipeline from '../../../islands/ScrapePipeline';
+import EndpointConsole from '../../../islands/EndpointConsole';
+import ViewportFrame from '../../../islands/ViewportFrame';
+import { useTranslations, getResume, locales, path, type Lang } from '../../../i18n/utils';
+import { getProjects, isTodo, visible, type Project } from '../../../lib/content';
+
+export async function getStaticPaths() {
+  // Con la sección oculta (src/data/site.ts) no se genera ningún caso de estudio.
+  if (!site.showProjects) return [];
+  const projects = await getProjects();
+  return locales.flatMap((lang) => projects.map((project) => ({ params: { lang, slug: project.id }, props: { project } })));
+}
+
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+const lang = Astro.params.lang as Lang;
+const t = useTranslations(lang);
+const r = getResume(lang);
+const { data } = project;
+const copy = data[lang];
+
+const meta = [data.year, t(`projects.kind.${data.kind}`), copy.client].filter(Boolean).join(' · ');
+const links = [
+  { label: t('projects.live'), url: data.live, icon: 'external' as const },
+  { label: t('projects.repo'), url: data.repo, icon: 'github' as const },
+].filter((l) => l.url);
+
+/** Listas sin los [COMPLETAR] en producción. En desarrollo se ven resaltados. */
+const keep = (items: string[]) => items.filter((i) => visible(i));
+const built = keep(copy.built);
+const results = keep(copy.results);
+import { site } from '../../../data/site';
+---
+
+<Base title={`${copy.title} — ${r.basics.name}`} description={copy.tagline} type="article">
+  <article class="container case">
+    <a class="btn btn--ghost btn--sm case__back" href={path(lang, 'proyectos')}>
+      <Icon name="arrow-left" size={16} />
+      {t('projects.back')}
+    </a>
+
+    <header class="case__head">
+      <p class="eyebrow">
+        {meta}
+        {data.example && <span class="badge">{t('projects.example')}</span>}
+      </p>
+      <h1 class="case__title">{copy.title}</h1>
+      <p class="lead">{copy.tagline}</p>
+
+      <dl class="case__facts">
+        {
+          visible(copy.role) && (
+            <div>
+              <dt>{t('projects.role')}</dt>
+              <dd>{isTodo(copy.role) ? <Todo text={copy.role} /> : copy.role}</dd>
+            </div>
+          )
+        }
+        <div>
+          <dt>{t('projects.stack')}</dt>
+          <dd>
+            <ul class="chips">
+              {
+                data.stack.map((s) => (
+                  <li>
+                    <a class="chip" href={`${path(lang, 'proyectos')}?tech=${encodeURIComponent(s)}`}>
+                      {s}
+                    </a>
+                  </li>
+                ))
+              }
+            </ul>
+          </dd>
+        </div>
+      </dl>
+
+      {
+        links.length > 0 && (
+          <p class="stack case__links">
+            {links.map((l, i) => (
+              <a class:list={['btn', i === 0 ? 'btn--primary' : 'btn--secondary']} href={l.url} target="_blank" rel="noopener noreferrer">
+                <Icon name={l.icon} size={16} />
+                {l.label}
+              </a>
+            ))}
+          </p>
+        )
+      }
+    </header>
+
+    {
+      data.image && (
+        <figure class="case__media">
+          <Image
+            src={data.image}
+            alt={data.imageAlt ?? `${t('projects.imageOf')} ${copy.title}`}
+            widths={[640, 960, 1280]}
+            sizes="(min-width: 56rem) 52rem, 100vw"
+            loading="eager"
+            fetchpriority="high"
+          />
+        </figure>
+      )
+    }
+
+    {
+      copy.problem && (
+        <section class="case__block">
+          <h2 class="case__h2">{t('projects.problem')}</h2>
+          <p>{copy.problem}</p>
+        </section>
+      )
+    }
+
+    {
+      built.length > 0 && (
+        <section class="case__block">
+          <h2 class="case__h2">{t('projects.built')}</h2>
+          <ul class="list-dash">
+            {built.map((item) => (
+              <li>{isTodo(item) ? <Todo text={item} /> : item}</li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    {
+      results.length > 0 && (
+        <section class="case__block">
+          <h2 class="case__h2">{t('projects.results')}</h2>
+          <ul class="list-dash">
+            {results.map((item) => (
+              <li>{isTodo(item) ? <Todo text={item} /> : item}</li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    {
+      copy.decisions.length > 0 && (
+        <section class="case__block">
+          <h2 class="case__h2">{t('projects.decisions')}</h2>
+          <ol class="decisions">
+            {copy.decisions.map((d) => (
+              <li class="decisions__item">
+                <h3 class="decisions__label">{d.label}</h3>
+                <p class="decisions__body">{d.body}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )
+    }
+
+    {
+      data.demo !== 'none' && (
+        <section class="case__block">
+          <h2 class="case__h2">{t('projects.demo')}</h2>
+          {copy.demoNote && <p class="muted">{copy.demoNote}</p>}
+          {data.demo === 'scrape' && <ScrapePipeline client:visible lang={lang} />}
+          {data.demo === 'endpoint' && <EndpointConsole client:visible lang={lang} />}
+          {data.demo === 'viewport' && data.live && <ViewportFrame client:visible lang={lang} src={data.live} title={copy.title} />}
+        </section>
+      )
+    }
+  </article>
+</Base>
+
+<style>
+  .case {
+    max-width: 52rem;
+    padding-block: clamp(1.5rem, 5vw, 3rem) var(--space-section);
+    display: grid;
+    gap: var(--space-2xl);
+  }
+  .case__back {
+    justify-self: start;
+    margin-left: -0.9rem;
+  }
+  .case__head {
+    display: grid;
+    gap: var(--space-m);
+  }
+  .case__head .eyebrow .badge {
+    margin-left: var(--space-xs);
+  }
+  .case__title {
+    font-size: var(--step-4);
+    letter-spacing: -0.03em;
+  }
+  .case__head .lead {
+    margin: 0;
+  }
+  .case__facts {
+    display: grid;
+    gap: var(--space-m);
+    margin: var(--space-xs) 0 0;
+  }
+  .case__facts div {
+    display: grid;
+    gap: var(--space-2xs);
+  }
+  .case__facts dt {
+    font-size: var(--step--1);
+    color: var(--text-subtle);
+  }
+  .case__facts dd {
+    margin: 0;
+  }
+  .case__facts .chip {
+    text-decoration: none;
+  }
+  .case__facts .chip:hover {
+    color: var(--text);
+    border-color: var(--border-strong);
+  }
+  .case__links {
+    margin: var(--space-xs) 0 0;
+  }
+  .case__media {
+    margin: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-l);
+    overflow: hidden;
+    background: var(--surface);
+  }
+  .case__media :global(img) {
+    width: 100%;
+  }
+  .case__block {
+    border-top: 1px solid var(--border);
+    padding-top: var(--space-xl);
+  }
+  .case__h2 {
+    font-size: var(--step-2);
+    margin-bottom: var(--space-m);
+  }
+  .decisions {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-l);
+    counter-reset: d;
+  }
+  .decisions__item {
+    counter-increment: d;
+    position: relative;
+    padding-left: 2.75rem;
+  }
+  .decisions__item::before {
+    content: counter(d, decimal-leading-zero);
+    position: absolute;
+    left: 0;
+    top: 0.15em;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--text-subtle);
+  }
+  .decisions__label {
+    font-size: var(--step-1);
+    margin-bottom: var(--space-2xs);
+  }
+  .decisions__body {
+    margin: 0;
+    color: var(--text-muted);
+  }
+</style>

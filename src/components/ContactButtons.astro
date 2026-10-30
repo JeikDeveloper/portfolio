@@ -1,0 +1,29 @@
+---
+/**
+ * Botones de contacto (WhatsApp y LinkedIn). Renderiza solo los enlaces, sin
+ * contenedor, para que cada lugar los acomode en su propia fila.
+ */
+import Icon from './ui/Icon.astro';
+import { getLangFromUrl, useTranslations, whatsappUrl, profileUrl, path } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const linkedin = profileUrl(lang, 'LinkedIn');
+---
+
+<a class="btn btn--primary" href={path(lang, 'contacto')}>
+  <Icon name="mail" size={16} />
+  {t('cta.write')}
+</a>
+<a class="btn btn--secondary" href={whatsappUrl(lang)} target="_blank" rel="noopener noreferrer">
+  <Icon name="whatsapp" size={16} />
+  WhatsApp
+</a>
+{
+  linkedin && (
+    <a class="btn btn--ghost" href={linkedin} target="_blank" rel="noopener noreferrer">
+      <Icon name="linkedin" size={16} />
+      LinkedIn
+    </a>
+  )
+}
