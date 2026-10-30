@@ -10,6 +10,7 @@ import StatusBadge from '../../components/StatusBadge.astro';
 import Stats from '../../components/Stats.astro';
 import Availability from '../../components/Availability.astro';
 import { langStaticPaths, useTranslations, getResume, path, type Lang } from '../../i18n/utils';
+import { formatRange } from '../../lib/dates';
 import { getProjects, getPosts } from '../../lib/content';
 import { site } from '../../data/site';
 
@@ -90,7 +91,7 @@ const posts = (await getPosts(lang)).slice(0, 3);
         r.work.map((job) => (
           <li class="jobs__item" data-reveal>
             <span class="jobs__dates mono">
-              {job.startDate} — {job.endDate}
+              {formatRange(job.startDate, job.endDate, lang)}
             </span>
             <span class="jobs__role">{job.position}</span>
             <span class="jobs__org">{job.name}</span>

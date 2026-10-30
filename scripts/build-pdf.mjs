@@ -29,11 +29,13 @@ const TYPES = {
   '.woff2': 'font/woff2',
 };
 
+// El archivo principal (el que bajan todos los botones del sitio) es la versión ATS.
+// La versión con diseño solo se ofrece como opción secundaria en /cv.
 const targets = [
-  { lang: 'es', variant: 'visual', file: 'jeiber-jimenez-es.pdf' },
-  { lang: 'es', variant: 'ats', file: 'jeiber-jimenez-es-ats.pdf' },
-  { lang: 'en', variant: 'visual', file: 'jeiber-jimenez-en.pdf' },
-  { lang: 'en', variant: 'ats', file: 'jeiber-jimenez-en-ats.pdf' },
+  { lang: 'es', variant: 'ats', file: 'jeiber-jimenez-es.pdf' },
+  { lang: 'es', variant: 'visual', file: 'jeiber-jimenez-es-visual.pdf' },
+  { lang: 'en', variant: 'ats', file: 'jeiber-jimenez-en.pdf' },
+  { lang: 'en', variant: 'visual', file: 'jeiber-jimenez-en-visual.pdf' },
 ];
 
 function serve() {

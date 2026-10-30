@@ -34,7 +34,7 @@
     {
       "name": "Tata Consultancy Services",
       "position": "Desarrollador",
-      "startDate": "2023",
+      "startDate": "2023-12",
       "endDate": "Actualidad",
       "summary": "Ingeniería de ciclo completo sobre AWS, del concepto al despliegue: automatización de procesos con servicios serverless, plataformas de datos y soluciones de IA —modelos propios, agentes con LLM y flujos en n8n— metidas dentro de las decisiones del negocio. En varios proyectos asumí el rol de líder técnico.",
       "highlights": [
@@ -51,10 +51,10 @@
       ]
     },
     {
-      "name": "LisaInsurtech",
+      "name": "LISA Insurtech",
       "position": "Desarrollador Python para IA",
-      "startDate": "2022",
-      "endDate": "2023",
+      "startDate": "2022-06",
+      "endDate": "2024-01",
       "summary": "En el equipo de Inteligencia Artificial de una insurtech: llevé a producción modelos propios que automatizan decisiones que antes dependían de una persona mirando fotos y documentos.",
       "highlights": [
         "Entrené y puse en producción modelos de visión por computadora que analizan las fotos de un siniestro: valoran el daño y detectan cuando no corresponden a lo reportado.",
@@ -68,8 +68,8 @@
     {
       "name": "Tic Social",
       "position": "Desarrollador Backend Python",
-      "startDate": "2021",
-      "endDate": "2022",
+      "startDate": "2021-12",
+      "endDate": "2022-06",
       "summary": "Backend para entidades del sector salud, con contacto directo con el cliente.",
       "highlights": [
         "Integré Celery para sacar de la petición HTTP las tareas pesadas que bloqueaban la API.",

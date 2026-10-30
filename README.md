@@ -144,8 +144,10 @@ páginas `/es/cv/` y `/en/cv/`, y los 4 PDF:
 
 | Archivo | Para qué |
 |---|---|
-| `jeiber-jimenez-es.pdf` / `-en.pdf` | Versión visual. |
-| `jeiber-jimenez-es-ats.pdf` / `-en-ats.pdf` | Versión plana, para que los ATS (filtros automáticos de las empresas) la lean bien. |
+| `jeiber-jimenez-es.pdf` / `-en.pdf` | Versión ATS: una columna, Arial, títulos estándar y fechas MM/AAAA, para que los filtros automáticos de las empresas la lean bien. Es la que bajan todos los botones. |
+| `jeiber-jimenez-es-visual.pdf` / `-en-visual.pdf` | Versión con diseño. Solo se ofrece como segunda opción en `/cv`. |
+
+Las fechas de cada empleo van en `resume.*.json` como `"AAAA-MM"` (p. ej. `"2023-12"`).
 
 Cuando cambies el CV, corre `npm run release` y haz commit de `public/cv/`. Los PDF se
 generan en tu computador, no en Vercel: así el build en la nube no necesita Chromium.

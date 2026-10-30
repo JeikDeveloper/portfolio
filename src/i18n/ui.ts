@@ -79,8 +79,8 @@ export const ui = {
     'section.languages': 'Idiomas',
 
     'cv.title': 'Hoja de vida',
-    'cv.download': 'Descargar PDF',
-    'cv.downloadAts': 'Versión para ATS',
+    'cv.download': 'Descargar PDF (formato ATS)',
+    'cv.downloadVisual': 'Versión con diseño',
     'cv.generated': 'Generado el',
     'cv.version': 'Versión',
 
@@ -228,8 +228,8 @@ export const ui = {
     'section.languages': 'Languages',
 
     'cv.title': 'Résumé',
-    'cv.download': 'Download PDF',
-    'cv.downloadAts': 'ATS version',
+    'cv.download': 'Download PDF (ATS format)',
+    'cv.downloadVisual': 'Designed version',
     'cv.generated': 'Generated on',
     'cv.version': 'Version',
 

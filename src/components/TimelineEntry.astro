@@ -9,8 +9,11 @@ interface Props {
   highlights?: string[];
 }
 
+import { getLangFromUrl } from '../i18n/utils';
+import { formatRange } from '../lib/dates';
+
 const { name, position, startDate, endDate, summary, highlights = [] } = Astro.props;
-const dates = startDate ? `${startDate} — ${endDate}` : endDate;
+const dates = formatRange(startDate, endDate, getLangFromUrl(Astro.url));
 ---
 
 <li class="tl" data-reveal>

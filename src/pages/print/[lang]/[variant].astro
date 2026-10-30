@@ -6,6 +6,7 @@
  *   /print/es/ats     -> PDF plano, pensado para que un ATS lo lea sin perder datos
  */
 import { locales, getResume, type Lang } from '../../../i18n/utils';
+import { formatRange } from '../../../lib/dates';
 
 export function getStaticPaths() {
   return locales.flatMap((lang) =>
@@ -17,10 +18,35 @@ const lang = Astro.params.lang as Lang;
 const variant = Astro.params.variant as 'visual' | 'ats';
 const r = getResume(lang);
 
+const ats = variant === 'ats';
+const style = ats ? 'ats' : 'short';
+
+// Títulos estándar: los ATS reconocen las secciones por estos nombres.
 const L =
   lang === 'es'
-    ? { exp: 'Experiencia', skills: 'Competencias', edu: 'Formación', langs: 'Idiomas', profile: 'Perfil' }
-    : { exp: 'Experience', skills: 'Skills', edu: 'Education', langs: 'Languages', profile: 'Profile' };
+    ? {
+        exp: 'Experiencia laboral',
+        skills: 'Habilidades',
+        edu: 'Educación',
+        langs: 'Idiomas',
+        profile: 'Perfil profesional',
+        email: 'Correo',
+        phone: 'Teléfono',
+        location: 'Ubicación',
+        country: 'Colombia',
+      }
+    : {
+        exp: 'Work Experience',
+        skills: 'Skills',
+        edu: 'Education',
+        langs: 'Languages',
+        profile: 'Professional Summary',
+        email: 'Email',
+        phone: 'Phone',
+        location: 'Location',
+        country: 'Colombia',
+      };
+const place = `${r.basics.location.city}, ${L.country}`;
 ---
 
 <!doctype html>
@@ -42,10 +68,28 @@ const L =
     <header class="head">
       <h1>{r.basics.name}</h1>
       <p class="label">{r.basics.label}</p>
-      <p class="contact">
-        {r.basics.email} · {r.basics.phone} · {r.basics.location.city}, {r.basics.location.countryCode}
-        {r.basics.profiles.map((p) => <span> · {p.network}: {p.url}</span>)}
-      </p>
+      {
+        ats ? (
+          <p class="contact">
+            {L.email}: {r.basics.email}
+            <br />
+            {L.phone}: {r.basics.phone}
+            <br />
+            {L.location}: {place}
+            {r.basics.profiles.map((p) => (
+              <>
+                <br />
+                {p.network}: {p.url}
+              </>
+            ))}
+          </p>
+        ) : (
+          <p class="contact">
+            {r.basics.email} · {r.basics.phone} · {place}
+            {r.basics.profiles.map((p) => <span> · {p.network}: {p.url}</span>)}
+          </p>
+        )
+      }
     </header>
 
     <section>
@@ -58,12 +102,20 @@ const L =
       {
         r.work.map((job) => (
           <article class="job">
-            <h3>
-              {job.position} — {job.name}
-            </h3>
-            <p class="dates">
-              {job.startDate} – {job.endDate}
-            </p>
+            {ats ? (
+              <>
+                <h3>{job.position}</h3>
+                <p class="org">{job.name}</p>
+                <p class="dates">{formatRange(job.startDate, job.endDate, lang, style)}</p>
+              </>
+            ) : (
+              <>
+                <h3>
+                  {job.position} — {job.name}
+                </h3>
+                <p class="dates">{formatRange(job.startDate, job.endDate, lang, style)}</p>
+              </>
+            )}
             <p>{job.summary}</p>
             <ul>
               {job.highlights.map((h) => (
@@ -94,7 +146,7 @@ const L =
         {
           r.education.map((e) => (
             <li>
-              <strong>{e.area}</strong> — {e.institution}. {e.studyType}, {e.endDate}.
+              <strong>{e.area}</strong>, {e.institution}, {e.location}. {e.studyType}, {e.endDate}.
             </li>
           ))
         }
@@ -104,7 +156,7 @@ const L =
     <section>
       <h2>{L.langs}</h2>
       <ul>
-        {r.languages.map((l) => <li>{l.language} — {l.fluency}</li>)}
+        {r.languages.map((l) => <li>{l.language}: {l.fluency}</li>)}
       </ul>
     </section>
 
@@ -158,6 +210,7 @@ const L =
         }
         p {
           margin: 0 0 5pt;
+          max-width: none;
         }
         ul {
           margin: 4pt 0 0;
@@ -175,7 +228,14 @@ const L =
           font-size: 8.4pt;
           color: #4a585c;
         }
-        .job {
+        /* Un empleo largo puede partirse entre páginas; lo que no se separa es el
+           encabezado (cargo, empresa, fechas) de su primer párrafo. */
+        .job h3,
+        .job .org,
+        .job .dates {
+          break-after: avoid;
+        }
+        li {
           break-inside: avoid;
         }
         section {
@@ -187,13 +247,25 @@ const L =
          Un parser tiene que poder leerla de arriba abajo sin ambigüedad. */
       html[data-variant='ats'] body {
         font-family: Arial, Helvetica, sans-serif;
-        font-size: 11pt;
+        font-size: 10.5pt;
+        line-height: 1.38;
         color: #000;
+      }
+      html[data-variant='ats'] h1 {
+        font-size: 18pt;
+        letter-spacing: 0;
       }
       html[data-variant='ats'] h2 {
         border-bottom: none;
         letter-spacing: 0;
         font-size: 12pt;
+      }
+      html[data-variant='ats'] h3 {
+        margin-top: 10pt;
+      }
+      html[data-variant='ats'] .org {
+        font-weight: 700;
+        margin: 0;
       }
       html[data-variant='ats'] .contact,
       html[data-variant='ats'] .dates {

@@ -34,7 +34,7 @@
     {
       "name": "Tata Consultancy Services",
       "position": "Developer",
-      "startDate": "2023",
+      "startDate": "2023-12",
       "endDate": "Present",
       "summary": "Full-lifecycle engineering on AWS, from concept to deployment: process automation with serverless services, data platforms and AI solutions — custom models, LLM agents and n8n workflows — wired into business decisions. I took on the technical lead role on several projects.",
       "highlights": [
@@ -51,10 +51,10 @@
       ]
     },
     {
-      "name": "LisaInsurtech",
+      "name": "LISA Insurtech",
       "position": "Python Developer for AI",
-      "startDate": "2022",
-      "endDate": "2023",
+      "startDate": "2022-06",
+      "endDate": "2024-01",
       "summary": "On the Artificial Intelligence team of an insurtech: I took custom models to production to automate decisions that used to depend on a person looking at photos and documents.",
       "highlights": [
         "Trained and shipped computer vision models that read the photos of a claim: they assess the damage and flag images that do not match what was reported.",
@@ -68,8 +68,8 @@
     {
       "name": "Tic Social",
       "position": "Python Backend Developer",
-      "startDate": "2021",
-      "endDate": "2022",
+      "startDate": "2021-12",
+      "endDate": "2022-06",
       "summary": "Backend work for healthcare organizations, in direct contact with the client.",
       "highlights": [
         "Integrated Celery to move heavy tasks out of the HTTP request, where they were blocking the API.",
