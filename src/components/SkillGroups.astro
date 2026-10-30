@@ -37,11 +37,12 @@ function years(since: number) {
                   {years(s.since)}
                 </span>
               )}
-              {s.projects && s.projects.some(titleOf) && (
+              {/* Los proyectos donde se usó solo salen cuando la sección de proyectos está visible. */}
+              {site.showProjects && s.projects && s.projects.some(titleOf) && (
                 <span class="skills__used">
                   <span class="visually-hidden">{t('skills.usedIn')}: </span>
                   {s.projects.filter(titleOf).map((slug) => (
-                    site.showProjects ? <a href={path(lang, 'proyectos', slug)}>{titleOf(slug)}</a> : <span>{titleOf(slug)}</span>
+                    <a href={path(lang, 'proyectos', slug)}>{titleOf(slug)}</a>
                   ))}
                 </span>
               )}

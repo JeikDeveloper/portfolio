@@ -53,7 +53,7 @@ export const skillGroups: SkillGroup[] = [
       { name: 'SQL', since: 2021 },
       { name: 'PostgreSQL', since: 2026, projects: ['nexor-one'] },
       { name: 'Redis', since: 2026, projects: ['nexor-one'] },
-      { name: 'NoSQL' },
+      { name: 'NoSQL', since: 2023 },
       { name: 'ETL (AWS Glue)', since: 2023 },
       { name: 'Power BI', since: 2023 },
     ],
@@ -65,7 +65,7 @@ export const skillGroups: SkillGroup[] = [
       { name: 'Agentes con LLM', since: 2023, projects: ['nexor-one'] },
       { name: 'Claude API (tool use)', since: 2026, projects: ['nexor-one'] },
       { name: 'LangChain / LlamaIndex', since: 2023 },
-      { name: 'n8n' },
+      { name: 'n8n', since: 2025 },
       { name: 'Automatización de procesos', since: 2023 },
       { name: 'AWS Bedrock / SageMaker', since: 2023 },
       { name: 'Visión por computadora', since: 2022 },
@@ -94,7 +94,7 @@ export const skillGroups: SkillGroup[] = [
     // Las mismas de la hoja de vida (resume.*.json → "Habilidades blandas").
     skills: [
       { name: 'Liderazgo técnico' },
-      { name: 'Comunicación con clientes y negocio', since: 2021 },
+      { name: 'Comunicación con clientes y negocio' },
       { name: 'Traducir necesidades de negocio en soluciones técnicas' },
       { name: 'Trabajo en equipo' },
       { name: 'Resolución de problemas' },
