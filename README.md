@@ -160,7 +160,7 @@ generan en tu computador, no en Vercel: así el build en la nube no necesita Chr
 |---|---|
 | Artículos y proyectos | Panel `/keystatic` (o `src/content/`) |
 | Experiencia, educación, contacto, CV | `src/data/resume.es.json` y `resume.en.json` |
-| Habilidades de la web (categorías, años, proyectos) | `src/data/skills.ts` |
+| Habilidades de la web: las 10 principales (`featured`) y los años (`since`/`until` en meses o `years` fijos; ver el comentario del archivo) | `src/data/skills.ts` |
 | Texto de "Sobre mí" y "Qué busco" | `src/data/about.ts` |
 | Estado de disponibilidad (disponible / limitado / sin cupo) | `availability` en `src/data/about.ts` |
 | Qué repos de GitHub se muestran | `src/data/github.ts` |
@@ -182,13 +182,12 @@ juntos?" del inicio, la tarjeta de "Sobre mí" y el cierre de cada página.
 
 | Cifra | De dónde sale |
 |---|---|
-| Años de experiencia | El primer empleo de `resume.*.json` hasta hoy. |
+| Años de experiencia | Años completos desde el primer empleo de `resume.*.json`, con "+" (p. ej. "4+"). |
 | Empresas | Cantidad de empleos del CV. |
-| Tecnologías | Habilidades técnicas de `skills.ts`. |
 | Proyectos y artículos | Lo publicado en el panel, **sin contar el contenido de ejemplo**. |
 | Repositorios públicos | GitHub. |
 
-Una cifra en 0 no se muestra (por eso hoy no aparecen artículos: los dos son de ejemplo).
+Una cifra en 0 no se muestra. Un artículo escrito en los dos idiomas cuenta una vez.
 
 **GitHub.** La página de proyectos muestra tus repos públicos más recientes y los
 lenguajes que más usas. Se leen de la API de GitHub **cada vez que se publica el sitio**
