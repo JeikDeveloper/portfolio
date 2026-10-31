@@ -13,13 +13,14 @@ const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const r = getResume(lang);
 
-// Años completos desde el primer empleo ("2021-12"), con "+": 4 años y 10 meses -> "4+".
+// Años desde el primer empleo ("2021-12"); desde 10 meses se redondea, como en habilidades.
 const now = new Date();
 const months = r.work
   .map((w) => /^(\d{4})-(\d{2})/.exec(w.startDate))
   .filter((m) => m !== null)
   .map((m) => now.getFullYear() * 12 + now.getMonth() - (Number(m[1]) * 12 + Number(m[2]) - 1));
-const years = months.length ? Math.floor(Math.max(...months) / 12) : 0;
+const total = months.length ? Math.max(...months) : 0;
+const years = Math.floor(total / 12) + (total % 12 >= 10 ? 1 : 0);
 const projects = site.showProjects ? (await getProjects()).filter((p) => !p.data.example).length : 0;
 const published = (await getPosts()).filter((p) => !p.data.example && !p.data.draft);
 // Un artículo escrito en los dos idiomas cuenta una sola vez.
@@ -27,7 +28,7 @@ const posts = published.filter((p, i) => !published.slice(0, i).some((o) => isTr
 const gh = await getGitHub();
 
 const items = [
-  { value: years, display: `${years}+`, label: t('stats.years'), href: path(lang, 'sobre-mi') },
+  { value: years, label: t('stats.years'), href: path(lang, 'sobre-mi') },
   { value: r.work.length, label: t('stats.companies'), href: path(lang, 'sobre-mi') },
   { value: projects, label: projects === 1 ? t('stats.project') : t('stats.projects'), href: path(lang, 'proyectos') },
   { value: posts, label: posts === 1 ? t('stats.post') : t('stats.posts'), href: path(lang, 'blog') },
@@ -42,7 +43,7 @@ const items = [
         {items.map((i) => (
           <li class="stats__item" data-reveal>
             <a class="stats__link" href={i.href} {...(i.href?.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
-              <span class="stats__value">{i.display ?? i.value}</span>
+              <span class="stats__value">{i.value}</span>
               <span class="stats__label">{i.label}</span>
             </a>
           </li>

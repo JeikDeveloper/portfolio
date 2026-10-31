@@ -4,8 +4,8 @@
  * Los años tienen que poder sustentarse en una entrevista, así que cada uno sale de
  * una experiencia concreta de resume.*.json:
  * - `since` / `until`: mes ("AAAA-MM") en que empezaste y, si ya no la usas, en que
- *   dejaste de usarla. Se cuentan meses reales: 4 años y 10 meses se muestra
- *   "casi 5 años"; menos de 12 meses, "menos de 1 año".
+ *   dejaste de usarla. Se cuentan meses reales: desde 10 meses se redondea al año
+ *   siguiente (4 años y 10 meses -> "5 años"); menos de 12 meses, "menos de 1 año".
  * - `years`: años fijos, cuando el número lo diste tú y no sale de una fecha.
  * - `featured`: sale en "Tecnologías principales" del inicio (unas 10). El resto
  *   queda en la vista completa y en la hoja de vida.

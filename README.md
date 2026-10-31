@@ -182,7 +182,7 @@ juntos?" del inicio, la tarjeta de "Sobre mí" y el cierre de cada página.
 
 | Cifra | De dónde sale |
 |---|---|
-| Años de experiencia | Años completos desde el primer empleo de `resume.*.json`, con "+" (p. ej. "4+"). |
+| Años de experiencia | Desde el primer empleo de `resume.*.json`; desde 10 meses se redondea al año siguiente. |
 | Empresas | Cantidad de empleos del CV. |
 | Proyectos y artículos | Lo publicado en el panel, **sin contar el contenido de ejemplo**. |
 | Repositorios públicos | GitHub. |

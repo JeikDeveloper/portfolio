@@ -14,15 +14,14 @@ const t = useTranslations(lang);
 const projects = await getProjects();
 const titleOf = (slug: string) => projects.find((p) => p.id === slug)?.data[lang].title;
 
-/** "3 años", "casi 3 años" (2 años y 10 meses o más) o "menos de 1 año". */
+/** "3 años" o "menos de 1 año". Desde 10 meses se redondea al año siguiente (4 años y 10 meses -> 5 años). */
 function duration(s: Skill) {
   const months = skillMonths(s);
   if (months === null) return null;
   if (months < 12) return t('skills.underYear');
   const full = Math.floor(months / 12);
-  const almost = months % 12 >= 10;
-  const n = almost ? full + 1 : full;
-  return `${almost ? `${t('skills.almost')} ` : ''}${n} ${n === 1 ? t('skills.year') : t('skills.years')}`;
+  const n = months % 12 >= 10 ? full + 1 : full;
+  return `${n} ${n === 1 ? t('skills.year') : t('skills.years')}`;
 }
 ---
 

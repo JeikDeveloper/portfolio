@@ -21,9 +21,8 @@ export const ui = {
     'skills.since': 'desde',
     'skills.years': 'años',
     'skills.year': 'año',
-    'skills.almost': 'casi',
     'about.description':
-      'Desarrollador Python con casi cinco años llevando IA a producción: agentes con LLM, automatización con n8n y AWS, y liderazgo técnico.',
+      'Desarrollador Python con cinco años llevando IA a producción: agentes con LLM, automatización con n8n y AWS, y liderazgo técnico.',
     'meta.description':
       'Desarrollador Python especializado en IA, agentes con LLM y automatización con n8n y AWS. Llevo modelos a producción, del negocio al despliegue.',
     'skills.underYear': 'menos de 1 año',
@@ -80,7 +79,7 @@ export const ui = {
     'section.skills': 'Lo que sé hacer',
     'section.skills.note': 'Las tecnologías con las que más trabajo y el tiempo que llevo usándolas. Abajo está la lista completa.',
     'section.experience': 'Trayectoria',
-    'section.experience.note': 'Tres compañías, casi cinco años, un hilo común: datos que hay que mover y decisiones que hay que automatizar.',
+    'section.experience.note': 'Tres compañías, cinco años, un hilo común: datos que hay que mover y decisiones que hay que automatizar.',
     'section.projects': 'Proyectos',
     'section.projects.note': 'Desarrollos reales: el problema, lo que construí y el resultado.',
     'section.education': 'Formación',
@@ -177,9 +176,8 @@ export const ui = {
     'skills.since': 'since',
     'skills.years': 'years',
     'skills.year': 'year',
-    'skills.almost': 'almost',
     'about.description':
-      'Python developer with almost five years taking AI to production: LLM agents, automation with n8n and AWS, and technical leadership.',
+      'Python developer with five years taking AI to production: LLM agents, automation with n8n and AWS, and technical leadership.',
     'meta.description':
       'Python developer specializing in AI, LLM agents and automation with n8n and AWS. I take models to production, from business need to deployment.',
     'skills.underYear': 'under 1 year',
@@ -236,7 +234,7 @@ export const ui = {
     'section.skills': 'What I do',
     'section.skills.note': 'The technologies I work with most and how long I have used them. The full list is below.',
     'section.experience': 'Track record',
-    'section.experience.note': 'Three companies, almost five years, one common thread: data that has to move and decisions that have to be automated.',
+    'section.experience.note': 'Three companies, five years, one common thread: data that has to move and decisions that have to be automated.',
     'section.projects': 'Projects',
     'section.projects.note': 'Real work: the problem, what I built and the outcome.',
     'section.education': 'Education',

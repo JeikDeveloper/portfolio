@@ -11,7 +11,7 @@
     "email": "jeiber2001@gmail.com",
     "phone": "+57 321 960 5408",
     "url": "https://jeikdeveloper.vercel.app",
-    "summary": "Python developer with almost five years getting AI into production and automating the processes around it. In insurance I trained computer vision models that decide on real claims and documents; today, in consulting, I build LLM agents, automations on AWS and n8n, and extraction systems that run without manual intervention, and I have been the technical lead on several projects. I care about the whole problem, from the business to the deployment.",
+    "summary": "Python developer with five years getting AI into production and automating the processes around it. In insurance I trained computer vision models that decide on real claims and documents; today, in consulting, I build LLM agents, automations on AWS and n8n, and extraction systems that run without manual intervention, and I have been the technical lead on several projects. I care about the whole problem, from the business to the deployment.",
     "location": {
       "city": "Bogota",
       "region": "Bogota D.C.",
@@ -66,7 +66,7 @@
       ]
     },
     {
-      "name": "Tic Social",
+      "name": "Tic Social (via SkillNet IT EXPERTS)",
       "position": "Python Backend Developer",
       "startDate": "2021-12",
       "endDate": "2022-06",
