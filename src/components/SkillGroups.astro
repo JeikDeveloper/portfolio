@@ -1,11 +1,11 @@
 ---
 /**
- * Habilidades por categoría, con años de uso y enlaces a los proyectos donde se
- * aplicaron. Sin barras de porcentaje: los años y los proyectos dicen más.
+ * Habilidades: arriba las tecnologías principales y debajo, plegada, la lista
+ * completa por categoría. Sin barras de porcentaje: los años dicen más.
  */
 import Todo from './ui/Todo.astro';
 import { getLangFromUrl, useTranslations, path } from '../i18n/utils';
-import { skillGroups, skillName } from '../data/skills';
+import { skillGroups, featuredSkills, skillMonths, skillName, type Skill } from '../data/skills';
 import { getProjects } from '../lib/content';
 import { site } from '../data/site';
 
@@ -13,14 +13,33 @@ const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const projects = await getProjects();
 const titleOf = (slug: string) => projects.find((p) => p.id === slug)?.data[lang].title;
-const now = new Date().getFullYear();
 
-function years(since: number) {
-  const n = Math.max(1, now - since);
-  return `${n} ${n === 1 ? t('skills.year') : t('skills.years')}`;
+/** "3 años", "casi 3 años" (2 años y 10 meses o más) o "menos de 1 año". */
+function duration(s: Skill) {
+  const months = skillMonths(s);
+  if (months === null) return null;
+  if (months < 12) return t('skills.underYear');
+  const full = Math.floor(months / 12);
+  const almost = months % 12 >= 10;
+  const n = almost ? full + 1 : full;
+  return `${almost ? `${t('skills.almost')} ` : ''}${n} ${n === 1 ? t('skills.year') : t('skills.years')}`;
 }
 ---
 
+<ul class="top" aria-label={t('skills.main')}>
+  {
+    featuredSkills.map((s) => (
+      <li class="top__item" data-reveal>
+        {/* "AWS (Lambda, S3, …)" -> "AWS": el detalle queda en la lista completa. */}
+        <span class="top__name">{skillName(s.name, lang).replace(/\s*\(.*\)$/, '')}</span>
+        {duration(s) && <span class="top__years">{duration(s)}</span>}
+      </li>
+    ))
+  }
+</ul>
+
+<details class="all">
+  <summary class="all__toggle">{t('skills.all')}</summary>
 <div class="grid grid--3 skills">
   {
     skillGroups.map((group) => (
@@ -32,11 +51,7 @@ function years(since: number) {
           {group.skills.map((s) => (
             <li class="skills__item">
               <span class="skills__name">{skillName(s.name, lang)}</span>
-              {s.since && (
-                <span class="skills__years" title={`${t('skills.since')} ${s.since}`}>
-                  {years(s.since)}
-                </span>
-              )}
+              {duration(s) && <span class="skills__years">{duration(s)}</span>}
               {/* Los proyectos donde se usó solo salen cuando la sección de proyectos está visible. */}
               {site.showProjects && s.projects && s.projects.some(titleOf) && (
                 <span class="skills__used">
@@ -54,8 +69,47 @@ function years(since: number) {
     ))
   }
 </div>
+</details>
 
 <style>
+  .top {
+    list-style: none;
+    margin: 0 0 var(--space-l);
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 9.5rem), 1fr));
+    gap: var(--space-s);
+  }
+  .top__item {
+    display: grid;
+    align-content: start;
+    gap: 0.15rem;
+    padding: var(--space-s) var(--space-m);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-l);
+    background: var(--surface, transparent);
+  }
+  .top__name {
+    font-weight: 600;
+  }
+  .top__years {
+    font-size: var(--step--1);
+    color: var(--text-subtle);
+    font-variant-numeric: tabular-nums;
+  }
+  .all__toggle {
+    cursor: pointer;
+    width: fit-content;
+    margin-bottom: var(--space-m);
+    font-weight: 550;
+    color: var(--text-muted);
+  }
+  .all__toggle:hover {
+    color: var(--text);
+  }
+  .all[open] .all__toggle {
+    margin-bottom: var(--space-l);
+  }
   .skills__group {
     display: grid;
     align-content: start;

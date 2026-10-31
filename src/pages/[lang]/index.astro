@@ -25,7 +25,7 @@ const featured = site.showProjects ? (await getProjects()).filter((p) => p.data.
 const posts = (await getPosts(lang)).slice(0, 3);
 ---
 
-<Base title={`${r.basics.name} — ${r.basics.label}`} description={r.basics.summary} type="profile" cta={false}>
+<Base title={`${r.basics.name} — ${r.basics.label}`} description={t('meta.description')} type="profile" cta={false}>
   <section class="hero" aria-labelledby="hero-title">
     <div class="container hero__inner">
       <StatusBadge />

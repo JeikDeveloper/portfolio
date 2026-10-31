@@ -5,7 +5,6 @@
  * son de ejemplo no se muestran.
  */
 import { getLangFromUrl, useTranslations, getResume, path } from '../i18n/utils';
-import { skillCount } from '../data/skills';
 import { getProjects, getPosts, isTranslation } from '../lib/content';
 import { getGitHub } from '../lib/github';
 import { site } from '../data/site';
@@ -14,8 +13,13 @@ const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const r = getResume(lang);
 
-const starts = r.work.map((w) => parseInt(w.startDate, 10)).filter(Number.isFinite);
-const years = starts.length ? new Date().getFullYear() - Math.min(...starts) : 0;
+// Años completos desde el primer empleo ("2021-12"), con "+": 4 años y 10 meses -> "4+".
+const now = new Date();
+const months = r.work
+  .map((w) => /^(\d{4})-(\d{2})/.exec(w.startDate))
+  .filter((m) => m !== null)
+  .map((m) => now.getFullYear() * 12 + now.getMonth() - (Number(m[1]) * 12 + Number(m[2]) - 1));
+const years = months.length ? Math.floor(Math.max(...months) / 12) : 0;
 const projects = site.showProjects ? (await getProjects()).filter((p) => !p.data.example).length : 0;
 const published = (await getPosts()).filter((p) => !p.data.example && !p.data.draft);
 // Un artículo escrito en los dos idiomas cuenta una sola vez.
@@ -23,9 +27,8 @@ const posts = published.filter((p, i) => !published.slice(0, i).some((o) => isTr
 const gh = await getGitHub();
 
 const items = [
-  { value: years, label: t('stats.years'), href: path(lang, 'sobre-mi') },
+  { value: years, display: `${years}+`, label: t('stats.years'), href: path(lang, 'sobre-mi') },
   { value: r.work.length, label: t('stats.companies'), href: path(lang, 'sobre-mi') },
-  { value: skillCount, label: t('stats.techs'), href: '#habilidades' },
   { value: projects, label: projects === 1 ? t('stats.project') : t('stats.projects'), href: path(lang, 'proyectos') },
   { value: posts, label: posts === 1 ? t('stats.post') : t('stats.posts'), href: path(lang, 'blog') },
   { value: gh?.publicRepos ?? 0, label: t('stats.repos'), href: gh?.profileUrl },
@@ -39,7 +42,7 @@ const items = [
         {items.map((i) => (
           <li class="stats__item" data-reveal>
             <a class="stats__link" href={i.href} {...(i.href?.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
-              <span class="stats__value">{i.value}</span>
+              <span class="stats__value">{i.display ?? i.value}</span>
               <span class="stats__label">{i.label}</span>
             </a>
           </li>

@@ -20,7 +20,7 @@ const a = about[lang];
 const looking = [...a.lookingFor, ...a.conditions].filter((i) => visible(i));
 ---
 
-<Base title={`${t('about.title')} — ${r.basics.name}`} description={a.story[0]} type="profile">
+<Base title={`${t('about.title')} — ${r.basics.name}`} description={t('about.description')} type="profile">
   <header class="page-head">
     <div class="container">
       <h1 class="page-head__title">{t('about.title')}</h1>
